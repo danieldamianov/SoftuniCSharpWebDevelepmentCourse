@@ -18,7 +18,7 @@ namespace SIS.HTTP.Sessions
 
         public void AddParameter(string name, object parameter)
         {
-            if (this.ContainsParameter(name) == false)
+            if (this.ContainsParameter(name))
             {
                 throw new ArgumentException("Such parameter already exists!!!");
             }

@@ -15,9 +15,9 @@ namespace IRunes.App
             serverRoutingTable.Add(HttpRequestMethod.Get, "/", (_) => new RedirectResult("/Home/Index"));
             serverRoutingTable.Add(HttpRequestMethod.Get, "/Home/Index", new HomeController().HomePage);
 
-            serverRoutingTable.Add(HttpRequestMethod.Get, "/Users/Login", new UsersController().LoginPage);
-            serverRoutingTable.Add(HttpRequestMethod.Get, "/Users/Register", new UsersController().RegisterPage);
-            serverRoutingTable.Add(HttpRequestMethod.Get, "/Albums/All", new AlbumsController().LoadAllAblumsPage);
+            serverRoutingTable.Add(HttpRequestMethod.Get, "/Users/Login", new UsersController().Login);
+            serverRoutingTable.Add(HttpRequestMethod.Get, "/Users/Register", new UsersController().Register);
+            serverRoutingTable.Add(HttpRequestMethod.Get, "/Albums/All", new AlbumsController().All);
             serverRoutingTable.Add(HttpRequestMethod.Get, "/Albums/Create", new AlbumsController().LoadCreateAlbumPage);
             serverRoutingTable.Add(HttpRequestMethod.Get, "/Albums/Details", new AlbumsController().DisplayInfoAboutAlbum);
             serverRoutingTable.Add(HttpRequestMethod.Get, "/Tracks/Create", new AlbumsController().DisplayCreateTrackPage);

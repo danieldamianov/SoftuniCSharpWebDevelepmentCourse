@@ -14,7 +14,7 @@ namespace IRunes.App.Controllers
 {
     public class AlbumsController
     {
-        public IHttpResponse LoadAllAblumsPage(IHttpRequest httpRequest)
+        public IHttpResponse All(IHttpRequest httpRequest)
         {
             using (IRunesDbContext runesDbContext = new IRunesDbContext())
             {

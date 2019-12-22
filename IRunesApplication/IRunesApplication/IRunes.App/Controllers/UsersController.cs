@@ -1,4 +1,5 @@
 ﻿using IRunes.Database;
+using IRunes.Database.Models;
 using SIS.HTTP.Requests;
 using SIS.HTTP.Responses;
 using SIS.WebServer.Results;
@@ -10,16 +11,16 @@ using System.Text;
 
 namespace IRunes.App.Controllers
 {
-    class UsersController
+    class UsersController : BaseController
     {
-        public IHttpResponse LoginPage(IHttpRequest httpRequest)
+        public IHttpResponse Login(IHttpRequest httpRequest)
         {
-            return new HtmlResult(File.ReadAllText("Controllers/LoginPage.html"), SIS.HTTP.Enums.HttpResponseStatusCode.Ok);
+            return this.View();
         }
 
-        public IHttpResponse RegisterPage(IHttpRequest httpRequest)
+        public IHttpResponse Register(IHttpRequest httpRequest)
         {
-            return new HtmlResult(File.ReadAllText("Controllers/RegisterPage.html"),SIS.HTTP.Enums.HttpResponseStatusCode.Ok);
+            return this.View();
         }
 
         public IHttpResponse HandleRegistration(IHttpRequest httpRequest)
@@ -34,7 +35,7 @@ namespace IRunes.App.Controllers
 
                 if (password != confirmPassword || runesDbContext.Users.Any(u => u.Username == username))
                 {
-                    return new RedirectResult("/Users/Register");
+                    return this.Redirect("/Users/Register");
                 }
 
                 Database.Models.User user = new Database.Models.User
@@ -45,10 +46,12 @@ namespace IRunes.App.Controllers
                 };
                 runesDbContext.Users.Add(user);
 
-                if (runesDbContext.Sessions.Find(httpRequest.Session.Id) == null)
-                {
-                    runesDbContext.Sessions.Add(new Database.Models.Session() { Id = httpRequest.Session.Id, UserId = user.Id });
-                }
+                httpRequest.Session.AddParameter("username", username);
+                httpRequest.Session.AddParameter("userId", user.Id);
+                //if (runesDbContext.Sessions.Find(httpRequest.Session.Id) == null)
+                //{
+                //    runesDbContext.Sessions.Add(new Database.Models.Session() { Id = httpRequest.Session.Id, UserId = user.Id });
+                //}
 
                 runesDbContext.SaveChanges();
 
@@ -58,14 +61,17 @@ namespace IRunes.App.Controllers
 
         public IHttpResponse HandleLoggingOut(IHttpRequest httpRequest)
         {
-            using (IRunesDbContext runesDbContext = new IRunesDbContext())
-            {
-                runesDbContext.Sessions.Remove(runesDbContext.Sessions.Find(httpRequest.Session.Id));
-                runesDbContext.SaveChanges();
-            }
-            IHttpResponse httpResponse = new RedirectResult("/");
-            return httpResponse;
-            //httpRequest.Session = null;
+            httpRequest.Session.ClearParameters();
+            //this.ViewData.Clear();
+            return this.Redirect("/");
+            //using (IRunesDbContext runesDbContext = new IRunesDbContext())
+            //{
+            //    runesDbContext.Sessions.Remove(runesDbContext.Sessions.Find(httpRequest.Session.Id));
+            //    runesDbContext.SaveChanges();
+            //}
+            //IHttpResponse httpResponse = new RedirectResult("/");
+            //return httpResponse;
+            ////httpRequest.Session = null;
         }
         public IHttpResponse HandleLogingIn(IHttpRequest httpRequest)
         {
@@ -76,33 +82,37 @@ namespace IRunes.App.Controllers
             using (IRunesDbContext runesDbContext = new IRunesDbContext())
             {
 
-                if (runesDbContext.Users.Any(u => u.Username == username && u.Password == password) == false)
+                User user = runesDbContext.Users.FirstOrDefault(u => u.Username == username && u.Password == password);
+
+                if (user == null)
                 {
-                    return new RedirectResult("/Users/Login");
+                    return this.Redirect("/Users/Login");
                 }
 
-                Database.Models.User user = new Database.Models.User
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Password = password,
-                    Username = username
-                };
-                runesDbContext.Users.Add(user);
+                httpRequest.Session.AddParameter("username", username);
+                httpRequest.Session.AddParameter("userId", user.Id);
+                //Database.Models.User user = new Database.Models.User
+                //{
+                //    Id = Guid.NewGuid().ToString(),
+                //    Password = password,
+                //    Username = username
+                //};
+                //runesDbContext.Users.Add(user);
 
-                if (runesDbContext.Sessions.Find(httpRequest.Session.Id) == null)
-                {
-                    runesDbContext.Sessions.Add(new Database.Models.Session() { Id = httpRequest.Session.Id, UserId = user.Id });
-                }
-                else
-                {
-                    runesDbContext.Sessions.Find(httpRequest.Session.Id).UserId = user.Id;
-                }
+                //if (runesDbContext.Sessions.Find(httpRequest.Session.Id) == null)
+                //{
+                //    runesDbContext.Sessions.Add(new Database.Models.Session() { Id = httpRequest.Session.Id, UserId = user.Id });
+                //}
+                //else
+                //{
+                //    runesDbContext.Sessions.Find(httpRequest.Session.Id).UserId = user.Id;
+                //}
 
                 runesDbContext.SaveChanges();
 
 
-                RedirectResult redirectResult = new RedirectResult("/Home/Index");
-                return redirectResult;
+                //RedirectResult redirectResult = new RedirectResult("/Home/Index");
+                return this.Redirect("/Home/Index");
             }
         }
 

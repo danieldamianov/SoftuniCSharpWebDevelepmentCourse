@@ -20,31 +20,31 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Controllers\AllAlbumsPage.html">
+    <None Update="Views\Albums\All.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Controllers\CreateAlbumPage.html">
+    <None Update="Views\Albums\Create.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Controllers\CreateTrackPage.html">
+    <None Update="Views\Tracks\Create.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Controllers\DisplayInfoAboutAlbumPage.html">
+    <None Update="Views\Albums\Info.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Controllers\DisplayInfoAboutTrack.html">
+    <None Update="Views\Tracks\Info.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Controllers\HomePageLogedIn.html">
+    <None Update="Views\Home\LogedIn.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Controllers\HomePageLogedOut.html">
+    <None Update="Views\Home\LogedOut.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Controllers\LoginPage.html">
+    <None Update="Views\Users\Login.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Controllers\RegisterPage.html">
+    <None Update="Views\Users\Register.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
