@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css " />
+
+
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <title></title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">IRunes</a>
+            </div>
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active"> <a class="nav-link" href="/">Home</a></li>
+                <li><a class="nav-link" href="/Albums/All">Albums  </a></li>
+                <li><a class="nav-link" href="/Users/Logout">Logout  </a></li>
+            </ul>
+        </div>
+    </nav>
+    <hr />
+    <h1>Create Track</h1>
+    <form action="/Tracks/Create?albumId=@albumId" method="post">
+        <div class="form-group">
+            <label>Name</label> <input type="text" name="name" value="" />
+        </div>
+            <label>Link</label> <input type="text" name="link" value="" />
+        <div class="form-group">
+            <label>Price</label> <input type="text" name="price" value="" />
+        </div>
+        <div class="form-group">
+            <input class="btn btn-primary" type="submit" name="submit" value="Create" />
+        </div>
+        <hr />
+        <a class="btn btn-primary"  href="/Albums/Details?id=@albumId">BackToAlbum</a>
+    </form>           
+</body>
+</html>
