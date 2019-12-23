@@ -18,8 +18,6 @@ namespace IRunes.App.Controllers
             {
                 if (this.IsLogedIn(httpRequest))
                 {
-                    //Database.Models.Session session = runesDbContext.Sessions.Find(httpRequest.Session.Id);
-                    //string username = runesDbContext.Users.Find(session.UserId).Username;
                     this.ViewData.Clear();
                     this.ViewData.Add("@Username", (string)httpRequest.Session.GetParameter("username"));
                     return this.LogedIn();

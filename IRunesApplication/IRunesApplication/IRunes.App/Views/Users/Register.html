@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <title></title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
 
 
 
@@ -30,20 +30,24 @@
     <br>
 
     <h1><b>Register</b></h1>
-    <form action="/Users/Register" method="post" class="form-control">
-        <label>Username:</label>
-        <br>
-        <input type="text" name="username" value="" />
-        <br>
-        <label>Password:</label>
-        <br>
-        <input type="password" name="password" value="" />
-        <br />
-        <label>ConfirmPassword:</label>
-        <br>
-        <input type="password" name="confirmPassword" value="" />
-        <br>
-        <input type="submit" name="submitButton" value="Register" />
-    </form>
+    <div class="row">
+        <div class="col-6 align-self-center">
+            <form action="/Users/Register" method="post" class="form-control">
+                <label>Username:</label>
+                <br>
+                <input type="text" name="username" value="" />
+                <br>
+                <label>Password:</label>
+                <br>
+                <input type="password" name="password" value="" />
+                <br />
+                <label>ConfirmPassword:</label>
+                <br>
+                <input type="password" name="confirmPassword" value="" />
+                <br>
+                <input type="submit" name="submitButton" value="Register" />
+            </form>
+        </div>
+    </div>
 </body>
 </html>
