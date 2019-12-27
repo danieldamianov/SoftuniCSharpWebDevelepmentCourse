@@ -2,7 +2,9 @@
 using IRunes.Database.Models;
 using SIS.HTTP.Requests;
 using SIS.HTTP.Responses;
-using SIS.WebServer.Results;
+using SIS.MvcFramework;
+using SIS.MvcFramework.Attributes;
+using SIS.MvcFramework.Results;
 using System;
 using System.IO;
 using System.Linq;
@@ -10,17 +12,29 @@ using System.Web;
 
 namespace IRunes.App.Controllers
 {
-    class TracksController : BaseController
+    public class TracksController : Controller
     {
         public IHttpResponse Create(IHttpRequest request)
         {
+            if (this.IsLogedIn(request) == false)
+            {
+                return this.Redirect("/Users/Login");
+            }
+
             string albumId = (string)request.QueryData["albumId"];
             this.ViewData.Clear();
             this.ViewData.Add("@albumId", albumId);
             return this.View();
         }
+
+        [HttpPost(ActionName = "Create")]
         public IHttpResponse HandleCreatingTrack(IHttpRequest request)
         {
+            if (this.IsLogedIn(request) == false)
+            {
+                return this.Redirect("/Users/Login");
+            }
+
             string albumId = (string)request.QueryData["albumId"];
 
             string trackName = (string)request.FormData["name"];
@@ -44,6 +58,11 @@ namespace IRunes.App.Controllers
         }
         public IHttpResponse Info(IHttpRequest request)
         {
+            if (this.IsLogedIn(request) == false)
+            {
+                return this.Redirect("/Users/Login");
+            }
+
             string albumId = (string)request.QueryData["albumId"];
             string trackId = (string)request.QueryData["trackId"];
 

@@ -2,7 +2,9 @@
 using IRunes.Database.Models;
 using SIS.HTTP.Requests;
 using SIS.HTTP.Responses;
-using SIS.WebServer.Results;
+using SIS.MvcFramework;
+using SIS.MvcFramework.Attributes;
+using SIS.MvcFramework.Results;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +14,7 @@ using System.Web;
 
 namespace IRunes.App.Controllers
 {
-    public class AlbumsController : BaseController
+    public class AlbumsController : Controller
     {
         public IHttpResponse All(IHttpRequest httpRequest)
         {
@@ -31,11 +33,22 @@ namespace IRunes.App.Controllers
 
         public IHttpResponse Create(IHttpRequest httpRequest)
         {
+            if (this.IsLogedIn(httpRequest) == false)
+            {
+                return this.Redirect("/Users/Login");
+            }
+
             return this.View();
         }
 
+        [HttpPost(ActionName = "Create")]
         public IHttpResponse HandleCreatingAlbum(IHttpRequest httpRequest)
         {
+            if (this.IsLogedIn(httpRequest) == false)
+            {
+                return this.Redirect("/Users/Login");
+            }
+
             using (IRunesDbContext runesDbContext = new IRunesDbContext())
             {
                 string name = (string)httpRequest.FormData["name"];
@@ -52,6 +65,11 @@ namespace IRunes.App.Controllers
 
         public IHttpResponse Info(IHttpRequest httpRequest)
         {
+            if (this.IsLogedIn(httpRequest) == false)
+            {
+                return this.Redirect("/Users/Login");
+            }
+
             using (var dbContext = new IRunesDbContext())
             {
                 Album album = dbContext.Albums.Find((string)httpRequest.QueryData["id"]);

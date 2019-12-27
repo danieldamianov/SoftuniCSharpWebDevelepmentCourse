@@ -4,16 +4,16 @@ using System.Net.Sockets;
 using System.Text;
 using SIS.HTTP.Requests;
 using SIS.HTTP.Responses;
-using SIS.WebServer.Routing;
 using SIS.HTTP.Common;
 using SIS.HTTP.Exceptions;
-using SIS.WebServer.Results;
 using System.Threading.Tasks;
 using SIS.HTTP.Sessions;
 using System.Reflection;
 using System.IO;
+using SIS.MvcFramework.Routing;
+using SIS.MvcFramework.Results;
 
-namespace SIS.WebServer
+namespace SIS.MvcFramework
 {
     class ConnectionHandler
     {
@@ -33,27 +33,27 @@ namespace SIS.WebServer
         {
             try
             {
-                var request = await this.ReadRequestAsync();
+                var request = await ReadRequestAsync();
 
                 if (request != null)
                 {
                     Console.WriteLine($"Processing: {request.RequestMethod} {request.Path}...");
-                    var sessionId = this.SetRequestSession(request);
-                    var response = this.HandleRequest(request);
-                    this.SetResponseSession(response, sessionId);
+                    var sessionId = SetRequestSession(request);
+                    var response = HandleRequest(request);
+                    SetResponseSession(response, sessionId);
                     //response.AddCookie(new HTTP.Cookies.HttpCookie("testDelimiterCookie", "value"));
-                    await this.PrepareResponseAsync(response);
+                    await PrepareResponseAsync(response);
                 }
             }
             catch (BadRequestException ex)
             {
-                await this.PrepareResponseAsync(new TextResult(ex.ToString(), HTTP.Enums.HttpResponseStatusCode.BadRequest));
+                await PrepareResponseAsync(new TextResult(ex.ToString(), HTTP.Enums.HttpResponseStatusCode.BadRequest));
             }
             catch (Exception ex)
             {
-                await this.PrepareResponseAsync(new TextResult(ex.ToString(), HTTP.Enums.HttpResponseStatusCode.InternalServerError));
+                await PrepareResponseAsync(new TextResult(ex.ToString(), HTTP.Enums.HttpResponseStatusCode.InternalServerError));
             }
-            this.client.Shutdown(SocketShutdown.Both);
+            client.Shutdown(SocketShutdown.Both);
         }
 
         private void SetResponseSession(IHttpResponse httpResponse, string sessionId)
@@ -90,7 +90,7 @@ namespace SIS.WebServer
 
             while (true)
             {
-                int numberOfBytesRead = await this.client.ReceiveAsync(data.Array, SocketFlags.None);
+                int numberOfBytesRead = await client.ReceiveAsync(data.Array, SocketFlags.None);
 
                 if (numberOfBytesRead == 0)
                 {
@@ -115,20 +115,20 @@ namespace SIS.WebServer
         }
 
         private IHttpResponse HandleRequest(IHttpRequest httpRequest)
-        
+
         {
             //if (this.serverRoutingTable.Contains(httpRequest.RequestMethod, httpRequest.Path) == false)
             //{
             //    return new TextResult($"Route with method {httpRequest.RequestMethod} and path \"{httpRequest.Path}\" not found."
             //        , HTTP.Enums.HttpResponseStatusCode.NotFound);
             //}
-            if (this.serverRoutingTable.Contains(httpRequest.RequestMethod, httpRequest.Path) == false)
+            if (serverRoutingTable.Contains(httpRequest.RequestMethod, httpRequest.Path) == false)
             {
-                return this.ReturnIfResource(httpRequest.Path);
+                return ReturnIfResource(httpRequest.Path);
             }
 
 
-            var response = this.serverRoutingTable.Get(httpRequest.RequestMethod, httpRequest.Path).Invoke(httpRequest);
+            var response = serverRoutingTable.Get(httpRequest.RequestMethod, httpRequest.Path).Invoke(httpRequest);
             return response;
         }
 
@@ -151,7 +151,7 @@ namespace SIS.WebServer
         private async Task PrepareResponseAsync(IHttpResponse httpResponse)
         {
             byte[] bytes = httpResponse.GetBytes();
-            await this.client.SendAsync(bytes, SocketFlags.None);
+            await client.SendAsync(bytes, SocketFlags.None);
         }
     }
 }

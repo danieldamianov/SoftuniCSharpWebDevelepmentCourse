@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\SIS\SIS.HTTP\SIS.HTTP.csproj" />
-    <ProjectReference Include="..\..\..\SIS\SIS.WebServer\SIS.WebServer.csproj" />
+    <ProjectReference Include="..\..\..\SIS\SIS.WebServer\SIS.MvcFramework.csproj" />
     <ProjectReference Include="..\IRunes.Database\IRunes.Database.csproj" />
   </ItemGroup>
 

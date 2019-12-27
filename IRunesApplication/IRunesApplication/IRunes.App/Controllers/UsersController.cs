@@ -2,7 +2,9 @@
 using IRunes.Database.Models;
 using SIS.HTTP.Requests;
 using SIS.HTTP.Responses;
-using SIS.WebServer.Results;
+using SIS.MvcFramework;
+using SIS.MvcFramework.Attributes;
+using SIS.MvcFramework.Results;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +14,7 @@ using System.Web;
 
 namespace IRunes.App.Controllers
 {
-    class UsersController : BaseController
+    public class UsersController : Controller
     {
         public IHttpResponse Login(IHttpRequest httpRequest)
         {
@@ -24,6 +26,7 @@ namespace IRunes.App.Controllers
             return this.View();
         }
 
+        [HttpPost(ActionName = "Register")]
         public IHttpResponse HandleRegistration(IHttpRequest httpRequest)
         {
             string username = (string)httpRequest.FormData["username"];
@@ -51,16 +54,19 @@ namespace IRunes.App.Controllers
 
                 runesDbContext.SaveChanges();
 
-                return new RedirectResult("/Home/Index");
+                return new RedirectResult("/Home/HomePage");
             }
         }
 
+        [HttpPost(ActionName = "Logout")]
         public IHttpResponse HandleLoggingOut(IHttpRequest httpRequest)
         {
             httpRequest.Session.ClearParameters();
 
             return this.Redirect("/");
         }
+
+        [HttpPost(ActionName = "Login")]
         public IHttpResponse HandleLogingIn(IHttpRequest httpRequest)
         {
             string username = (string)httpRequest.FormData["username"];
@@ -81,7 +87,7 @@ namespace IRunes.App.Controllers
 
                 runesDbContext.SaveChanges();
 
-                return this.Redirect("/Home/Index");
+                return this.Redirect("/Home/HomePage");
             }
         }
 

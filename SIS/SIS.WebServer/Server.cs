@@ -1,4 +1,4 @@
-﻿using SIS.WebServer.Routing;
+﻿using SIS.MvcFramework.Routing;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SIS.WebServer
+namespace SIS.MvcFramework
 {
     public class Server
     {
@@ -21,34 +21,33 @@ namespace SIS.WebServer
 
         private bool isRunning;
 
-        public Server(int port,IServerRoutingTable serverRoutingTable)
+        public Server(int port, IServerRoutingTable serverRoutingTable)
         {
             this.port = port;
-            this.tcpListener = new TcpListener(IPAddress.Parse(LocalHostIpAddress), this.port);
+            tcpListener = new TcpListener(IPAddress.Parse(LocalHostIpAddress), this.port);
 
             this.serverRoutingTable = serverRoutingTable;
         }
 
         public void Run()
         {
-            this.tcpListener.Start();
-            this.isRunning = true;
+            tcpListener.Start();
+            isRunning = true;
 
-            Console.WriteLine($"Server started at http://{LocalHostIpAddress}:{this.port}");
+            Console.WriteLine($"Server started at http://{LocalHostIpAddress}:{port}");
 
-            while (this.isRunning)
+            while (isRunning)
             {
-                Console.WriteLine($"Waiting for a client...");
 
-                var client = this.tcpListener.AcceptSocketAsync().GetAwaiter().GetResult();
+                var client = tcpListener.AcceptSocketAsync().GetAwaiter().GetResult();
 
-                Task.Run(() => this.Listen(client));
+                Task.Run(() => Listen(client));
             }
         }
 
         public async Task Listen(Socket client)
         {
-            var connectionHandler = new ConnectionHandler(client, this.serverRoutingTable);
+            var connectionHandler = new ConnectionHandler(client, serverRoutingTable);
             //await Task.Run(() => Thread.Sleep(10000));
             await connectionHandler.ProcessRequestAsync();
         }

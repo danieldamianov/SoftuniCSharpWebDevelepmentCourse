@@ -1,6 +1,6 @@
 ﻿using SIS.HTTP.Requests;
 using SIS.HTTP.Responses;
-using SIS.WebServer.Results;
+using SIS.MvcFramework.Results;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,13 +8,13 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace IRunes.App.Controllers
+namespace SIS.MvcFramework
 {
-    public class BaseController
+    public class Controller
     {
         protected Dictionary<string, string> ViewData;
 
-        public BaseController()
+        public Controller()
         {
             this.ViewData = new Dictionary<string, string>();
         }

@@ -6,16 +6,16 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SIS.WebServer.Results
+namespace SIS.MvcFramework.Results
 {
     public class InlineResourceResult : HttpResponse
     {
-        public InlineResourceResult(byte[] content,HttpResponseStatusCode httpResponseStatusCode)
-            :base(httpResponseStatusCode)
+        public InlineResourceResult(byte[] content, HttpResponseStatusCode httpResponseStatusCode)
+            : base(httpResponseStatusCode)
         {
-            this.Headers.AddHeader(new HttpHeader(HttpHeader.ContentLength, content.Length.ToString()));
-            this.Headers.AddHeader(new HttpHeader(HttpHeader.ContentDisposition, "inline"));
-            this.Content = content;
+            Headers.AddHeader(new HttpHeader(HttpHeader.ContentLength, content.Length.ToString()));
+            Headers.AddHeader(new HttpHeader(HttpHeader.ContentDisposition, "inline"));
+            Content = content;
         }
     }
 }

@@ -4,13 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SIS.WebServer.Results
+namespace SIS.MvcFramework.Results
 {
     public class RedirectResult : HttpResponse
     {
         public RedirectResult(string location) : base(HttpResponseStatusCode.SeeOther)
         {
-            this.Headers.AddHeader(new HTTP.Headers.HttpHeader("Location", location));
+            Headers.AddHeader(new HTTP.Headers.HttpHeader("Location", location));
         }
     }
 }

@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IRunes.App", "IRunes.App\IR
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIS.HTTP", "..\..\SIS\SIS.HTTP\SIS.HTTP.csproj", "{7F9F3FDA-BD60-48FA-921E-8FA36EBE92E8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIS.WebServer", "..\..\SIS\SIS.WebServer\SIS.WebServer.csproj", "{046D4023-D8D2-4E5B-9D01-7807A6737DFB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIS.MvcFramework", "..\..\SIS\SIS.WebServer\SIS.MvcFramework.csproj", "{046D4023-D8D2-4E5B-9D01-7807A6737DFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IRunes.Database", "IRunes.Database\IRunes.Database.csproj", "{7FD48ED3-E064-447C-A87A-75DEE455EFAA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IRunes.Database", "IRunes.Database\IRunes.Database.csproj", "{7FD48ED3-E064-447C-A87A-75DEE455EFAA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
