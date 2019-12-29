@@ -1,28 +1,22 @@
 ﻿using IRunes.Database;
 using IRunes.Database.Models;
-using SIS.HTTP.Requests;
-using SIS.HTTP.Responses;
+
 using SIS.MvcFramework;
-using SIS.MvcFramework.Attributes;
+using SIS.MvcFramework.Attributes.HttpAttributes;
+using SIS.MvcFramework.Attributes.SecurityAttributes;
 using SIS.MvcFramework.Results;
+
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Web;
 
 namespace IRunes.App.Controllers
 {
     public class AlbumsController : Controller
     {
-        public IHttpResponse All(IHttpRequest httpRequest)
+        [Authorize]
+        public ActionResult All()
         {
-            if (this.IsLogedIn(httpRequest) == false)
-            {
-                return this.Redirect("/Users/Login");
-            }
-
             using (IRunesDbContext runesDbContext = new IRunesDbContext())
             {
                 this.ViewData.Clear();
@@ -31,28 +25,20 @@ namespace IRunes.App.Controllers
             }
         }
 
-        public IHttpResponse Create(IHttpRequest httpRequest)
+        [Authorize]
+        public ActionResult Create()
         {
-            if (this.IsLogedIn(httpRequest) == false)
-            {
-                return this.Redirect("/Users/Login");
-            }
-
             return this.View();
         }
 
+        [Authorize]
         [HttpPost(ActionName = "Create")]
-        public IHttpResponse HandleCreatingAlbum(IHttpRequest httpRequest)
+        public ActionResult HandleCreatingAlbum()
         {
-            if (this.IsLogedIn(httpRequest) == false)
-            {
-                return this.Redirect("/Users/Login");
-            }
-
             using (IRunesDbContext runesDbContext = new IRunesDbContext())
             {
-                string name = (string)httpRequest.FormData["name"];
-                string cover = (string)httpRequest.FormData["cover"];
+                string name = (string)this.Request.FormData["name"];
+                string cover = (string)this.Request.FormData["cover"];
 
                 runesDbContext.Albums.Add(new Album() { Name = HttpUtility.UrlDecode(name), Cover = HttpUtility.UrlDecode(cover), Id = Guid.NewGuid().ToString() });
 
@@ -60,19 +46,14 @@ namespace IRunes.App.Controllers
             }
 
             return this.Redirect("/Albums/All");
-
         }
 
-        public IHttpResponse Info(IHttpRequest httpRequest)
+        [Authorize]
+        public ActionResult Details()
         {
-            if (this.IsLogedIn(httpRequest) == false)
-            {
-                return this.Redirect("/Users/Login");
-            }
-
             using (var dbContext = new IRunesDbContext())
             {
-                Album album = dbContext.Albums.Find((string)httpRequest.QueryData["id"]);
+                Album album = dbContext.Albums.Find((string)this.Request.QueryData["id"]);
                 //string Html = File.ReadAllText("Controllers/DisplayInfoAboutAlbumPage.html");
                 this.ViewData.Clear();
                 this.ViewData.Add("@Link", album.Cover);

@@ -1,12 +1,12 @@
 ﻿using IRunes.Database;
 using IRunes.Database.Models;
-using SIS.HTTP.Requests;
-using SIS.HTTP.Responses;
+
 using SIS.MvcFramework;
-using SIS.MvcFramework.Attributes;
+using SIS.MvcFramework.Attributes.HttpAttributes;
+using SIS.MvcFramework.Attributes.SecurityAttributes;
 using SIS.MvcFramework.Results;
+
 using System;
-using System.IO;
 using System.Linq;
 using System.Web;
 
@@ -14,32 +14,24 @@ namespace IRunes.App.Controllers
 {
     public class TracksController : Controller
     {
-        public IHttpResponse Create(IHttpRequest request)
+        [Authorize]
+        public ActionResult Create()
         {
-            if (this.IsLogedIn(request) == false)
-            {
-                return this.Redirect("/Users/Login");
-            }
-
-            string albumId = (string)request.QueryData["albumId"];
+            string albumId = (string)this.Request.QueryData["albumId"];
             this.ViewData.Clear();
             this.ViewData.Add("@albumId", albumId);
             return this.View();
         }
 
+        [Authorize]
         [HttpPost(ActionName = "Create")]
-        public IHttpResponse HandleCreatingTrack(IHttpRequest request)
+        public ActionResult HandleCreatingTrack()
         {
-            if (this.IsLogedIn(request) == false)
-            {
-                return this.Redirect("/Users/Login");
-            }
+            string albumId = (string)this.Request.QueryData["albumId"];
 
-            string albumId = (string)request.QueryData["albumId"];
-
-            string trackName = (string)request.FormData["name"];
-            string link = (string)request.FormData["link"];
-            decimal price = decimal.Parse((string)request.FormData["price"]);
+            string trackName = (string)this.Request.FormData["name"];
+            string link = (string)this.Request.FormData["link"];
+            decimal price = decimal.Parse((string)this.Request.FormData["price"]);
 
             using (IRunesDbContext runesDbContext = new IRunesDbContext())
             {
@@ -56,15 +48,12 @@ namespace IRunes.App.Controllers
 
             return this.Redirect($"/Albums/Details?id={albumId}");
         }
-        public IHttpResponse Info(IHttpRequest request)
-        {
-            if (this.IsLogedIn(request) == false)
-            {
-                return this.Redirect("/Users/Login");
-            }
 
-            string albumId = (string)request.QueryData["albumId"];
-            string trackId = (string)request.QueryData["trackId"];
+        [Authorize]
+        public ActionResult Details()
+        {
+            string albumId = (string)this.Request.QueryData["albumId"];
+            string trackId = (string)this.Request.QueryData["trackId"];
 
             using (IRunesDbContext dbContext = new IRunesDbContext())
             {

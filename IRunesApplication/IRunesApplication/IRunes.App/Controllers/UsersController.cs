@@ -1,37 +1,34 @@
 ﻿using IRunes.Database;
 using IRunes.Database.Models;
-using SIS.HTTP.Requests;
-using SIS.HTTP.Responses;
+
 using SIS.MvcFramework;
-using SIS.MvcFramework.Attributes;
+using SIS.MvcFramework.Attributes.HttpAttributes;
 using SIS.MvcFramework.Results;
+
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Web;
 
 namespace IRunes.App.Controllers
 {
     public class UsersController : Controller
     {
-        public IHttpResponse Login(IHttpRequest httpRequest)
+        public ActionResult Login()
         {
             return this.View();
         }
 
-        public IHttpResponse Register(IHttpRequest httpRequest)
+        public ActionResult Register()
         {
             return this.View();
         }
 
         [HttpPost(ActionName = "Register")]
-        public IHttpResponse HandleRegistration(IHttpRequest httpRequest)
+        public ActionResult HandleRegistration()
         {
-            string username = (string)httpRequest.FormData["username"];
-            string password = (string)httpRequest.FormData["password"];
-            string confirmPassword = (string)httpRequest.FormData["confirmPassword"];
+            string username = (string)this.Request.FormData["username"];
+            string password = (string)this.Request.FormData["password"];
+            string confirmPassword = (string)this.Request.FormData["confirmPassword"];
 
             using (IRunesDbContext runesDbContext = new IRunesDbContext())
             {
@@ -49,28 +46,27 @@ namespace IRunes.App.Controllers
                 };
                 runesDbContext.Users.Add(user);
 
-                httpRequest.Session.AddParameter("username", username);
-                httpRequest.Session.AddParameter("userId", user.Id);
 
                 runesDbContext.SaveChanges();
 
-                return new RedirectResult("/Home/HomePage");
+                this.SignIn(user.Id, user.Username, user.Email);
+
+                return this.Redirect("/Home/HomePage");
             }
         }
 
-        [HttpPost(ActionName = "Logout")]
-        public IHttpResponse HandleLoggingOut(IHttpRequest httpRequest)
+        [HttpGet(ActionName = "Logout")]
+        public ActionResult HandleLoggingOut()
         {
-            httpRequest.Session.ClearParameters();
-
+            this.SignOut();
             return this.Redirect("/");
         }
 
         [HttpPost(ActionName = "Login")]
-        public IHttpResponse HandleLogingIn(IHttpRequest httpRequest)
+        public ActionResult HandleLogingIn()
         {
-            string username = (string)httpRequest.FormData["username"];
-            string password = (string)httpRequest.FormData["password"];
+            string password = (string)this.Request.FormData["password"];
+            string username = (string)this.Request.FormData["username"];
 
             using (IRunesDbContext runesDbContext = new IRunesDbContext())
             {
@@ -82,10 +78,10 @@ namespace IRunes.App.Controllers
                     return this.Redirect("/Users/Login");
                 }
 
-                httpRequest.Session.AddParameter("username", username);
-                httpRequest.Session.AddParameter("userId", user.Id);
 
                 runesDbContext.SaveChanges();
+
+                this.SignIn(user.Id,user.Username,user.Email);
 
                 return this.Redirect("/Home/HomePage");
             }

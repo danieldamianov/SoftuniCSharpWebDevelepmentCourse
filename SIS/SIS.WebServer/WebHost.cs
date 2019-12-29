@@ -1,6 +1,9 @@
 ﻿using SIS.HTTP.Enums;
 using SIS.HTTP.Responses;
-using SIS.MvcFramework.Attributes;
+using SIS.MvcFramework.Attributes.ActionAttributes;
+using SIS.MvcFramework.Attributes.HttpAttributes;
+using SIS.MvcFramework.Attributes.SecurityAttributes;
+using SIS.MvcFramework.Results;
 using SIS.MvcFramework.Routing;
 using System;
 using System.Collections.Generic;
@@ -15,11 +18,11 @@ namespace SIS.MvcFramework
         public static void Run(IMvcApplication startUp)
         {
             IServerRoutingTable serverRoutingTable = new ServerRoutingTable();
-            AutoRegisterRoutes(startUp,serverRoutingTable);
+            AutoRegisterRoutes(startUp, serverRoutingTable);
             startUp.Configure(serverRoutingTable);
             startUp.ConfigureServices();
 
-            var server = new Server(8000,serverRoutingTable);
+            var server = new Server(8000, serverRoutingTable);
             server.Run();
 
         }
@@ -35,7 +38,7 @@ namespace SIS.MvcFramework
             {
                 MethodInfo[] actions = controller.GetMethods(BindingFlags.Public | BindingFlags.Instance
                     | BindingFlags.DeclaredOnly)
-                    .Where(m => m.IsSpecialName == false).ToArray();
+                    .Where(m => m.IsSpecialName == false && m.GetCustomAttribute<NonActionAttribute>() == null).ToArray();
                 foreach (var method in actions)
                 {
                     BaseHttpAttribute httpAttribute = (BaseHttpAttribute)method
@@ -60,7 +63,7 @@ namespace SIS.MvcFramework
                         }
                         if (!string.IsNullOrWhiteSpace(httpAttribute.ActionName))
                         {
-                            actionName = httpAttribute.ActionName; 
+                            actionName = httpAttribute.ActionName;
                             url = $"/{folderName}/{actionName}";
                         }
 
@@ -70,12 +73,19 @@ namespace SIS.MvcFramework
                           =>
                       {
                           var controllerInstance = Activator.CreateInstance(controller);
-                          var response = method.Invoke(controllerInstance,new[] { request});
+                          ((Controller)controllerInstance).Request = request;
+                          AuthorizeAttribute authorizeAttribute = method.GetCustomAttribute<AuthorizeAttribute>();
+                          if (authorizeAttribute != null
+                          && !authorizeAttribute.IsAuthorized(((Controller)controllerInstance).User))
+                          {
+                              return new RedirectResult("/");
+                          }
+                          var response = method.Invoke(controllerInstance, new object[0] { });
                           return response as IHttpResponse;
                       });
 
 
-                    
+
                 }
             }
         }

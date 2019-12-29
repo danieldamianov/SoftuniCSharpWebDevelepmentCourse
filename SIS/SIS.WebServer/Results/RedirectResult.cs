@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SIS.MvcFramework.Results
 {
-    public class RedirectResult : HttpResponse
+    public class RedirectResult : ActionResult
     {
         public RedirectResult(string location) : base(HttpResponseStatusCode.SeeOther)
         {

@@ -1,44 +1,49 @@
 ﻿using IRunes.Database;
-using SIS.HTTP.Requests;
-using SIS.HTTP.Responses;
+using SIS.HTTP.Identity;
 using SIS.MvcFramework;
-using SIS.MvcFramework.Attributes;
+using SIS.MvcFramework.Attributes.HttpAttributes;
 using SIS.MvcFramework.Results;
-using System;
-using System.Collections.Generic;
+
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace IRunes.App.Controllers
 {
     public class HomeController : Controller
     {
+
+        //public ActionResult Do()
+        //{
+        //    Person user = new Person() { Age = 3 ,Name = "adsd"};
+        //    return new FileResult(File.ReadAllBytes(@"D:\test.txt"), SIS.HTTP.Enums.HttpResponseStatusCode.Ok);
+        //    //return this.Json(user);
+        //}
+
+
         [HttpGet(Url = "/")]
-        public IHttpResponse HomePageSlash(IHttpRequest httpRequest)
+        public ActionResult HomePageSlash()
         {
-            return HomePage(httpRequest);
+            return HomePage();
         }
-        public IHttpResponse HomePage(IHttpRequest httpRequest)
+        public ActionResult HomePage()
         {
             using (IRunesDbContext runesDbContext = new IRunesDbContext())
             {
-                if (this.IsLogedIn(httpRequest))
+                if (this.IsLogedIn())
                 {
                     this.ViewData.Clear();
-                    this.ViewData.Add("@Username", (string)httpRequest.Session.GetParameter("username"));
+                    this.ViewData.Add("@Username", ((Principal)this.Request.Session.GetParameter("principal")).Username);
                     return this.LogedIn();
                 }
                 return this.LogedOut();
             }
         }
 
-        private IHttpResponse LogedOut()
+        private ActionResult LogedOut()
         {
-             return this.View();
+            return this.View();
         }
 
-        private IHttpResponse LogedIn()
+        private ActionResult LogedIn()
         {
             return this.View();
         }

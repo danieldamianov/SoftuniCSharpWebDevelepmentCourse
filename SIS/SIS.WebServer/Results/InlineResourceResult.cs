@@ -8,7 +8,7 @@ using System.Text;
 
 namespace SIS.MvcFramework.Results
 {
-    public class InlineResourceResult : HttpResponse
+    public class InlineResourceResult : ActionResult
     {
         public InlineResourceResult(byte[] content, HttpResponseStatusCode httpResponseStatusCode)
             : base(httpResponseStatusCode)

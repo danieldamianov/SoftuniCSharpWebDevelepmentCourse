@@ -6,7 +6,7 @@ using SIS.HTTP.Responses;
 
 namespace SIS.MvcFramework.Results
 {
-    class TextResult : HttpResponse
+    class TextResult : ActionResult
     {
         public TextResult(string content, HttpResponseStatusCode httpResponseStatusCode, string contentType = @"text/plain charset=utf-8")
             : base(httpResponseStatusCode)
