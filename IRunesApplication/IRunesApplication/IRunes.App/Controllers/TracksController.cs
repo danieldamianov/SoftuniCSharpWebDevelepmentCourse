@@ -1,19 +1,27 @@
-﻿using IRunes.Database;
+﻿
 using IRunes.Database.Models;
-
+using IRunes.Services;
 using SIS.MvcFramework;
 using SIS.MvcFramework.Attributes.HttpAttributes;
 using SIS.MvcFramework.Attributes.SecurityAttributes;
 using SIS.MvcFramework.Results;
 
 using System;
-using System.Linq;
 using System.Web;
 
 namespace IRunes.App.Controllers
 {
     public class TracksController : Controller
     {
+        public TracksController()
+        {
+            this.albumsService = new AlbumsService();
+            this.trackService = new TrackService();
+        }
+
+        IAlbumsService albumsService;
+        ITrackService trackService;
+
         [Authorize]
         public ActionResult Create()
         {
@@ -33,18 +41,13 @@ namespace IRunes.App.Controllers
             string link = (string)this.Request.FormData["link"];
             decimal price = decimal.Parse((string)this.Request.FormData["price"]);
 
-            using (IRunesDbContext runesDbContext = new IRunesDbContext())
+            this.albumsService.AddTrackToAlbum(albumId, new Track()
             {
-                runesDbContext.Albums.Find(albumId).Tracks.Add(new Track()
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Name = HttpUtility.UrlDecode(trackName),
-                    Link = HttpUtility.UrlDecode(link),
-                    Price = price
-                });
-
-                runesDbContext.SaveChanges();
-            }
+                Id = Guid.NewGuid().ToString(),
+                Name = HttpUtility.UrlDecode(trackName),
+                Link = HttpUtility.UrlDecode(link),
+                Price = price
+            });
 
             return this.Redirect($"/Albums/Details?id={albumId}");
         }
@@ -55,19 +58,14 @@ namespace IRunes.App.Controllers
             string albumId = (string)this.Request.QueryData["albumId"];
             string trackId = (string)this.Request.QueryData["trackId"];
 
-            using (IRunesDbContext dbContext = new IRunesDbContext())
-            {
-                Album album = dbContext.Albums.Find(albumId);
-                Track track = album.Tracks.First(t => t.Id == trackId);
-                this.ViewData.Clear();
-                this.ViewData.Add("@Link", track.Link);
-                this.ViewData.Add("@Name", track.Name);
-                this.ViewData.Add("@Price", track.Price.ToString());
-                this.ViewData.Add("@albumId", album.Id);
+            Track track = this.trackService.GetTrackById(trackId);
+            this.ViewData.Clear();
+            this.ViewData.Add("@Link", track.Link);
+            this.ViewData.Add("@Name", track.Name);
+            this.ViewData.Add("@Price", track.Price.ToString());
+            this.ViewData.Add("@albumId", albumId);
 
-                return this.View();
-
-            }
+            return this.View();
         }
     }
 }
