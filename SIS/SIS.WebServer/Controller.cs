@@ -3,6 +3,7 @@ using SIS.HTTP.Requests;
 using SIS.HTTP.Responses;
 using SIS.MvcFramework.Extensions;
 using SIS.MvcFramework.Results;
+using SIS.MvcFramework.ViewEngine;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +16,9 @@ namespace SIS.MvcFramework
     public class Controller
     {
         protected Dictionary<string, string> ViewData;
+        private const string layoutPath = "Views/_Layout.html";
+        private readonly IViewEngine ViewEngine = new SISViewEngine();
+
 
         protected internal Principal User => this.Request.Session.ContainsParameter("principal")
             ? (Principal)this.Request.Session.GetParameter("principal")
@@ -26,7 +30,8 @@ namespace SIS.MvcFramework
         {
             this.ViewData = new Dictionary<string, string>();
         }
-        protected ActionResult View([CallerMemberName] string name = null)
+
+        protected ActionResult View<T>(T model = null, [CallerMemberName] string name = null) where T : class
         {
             string folderName = this.GetType().Name.Replace("Controller", string.Empty);
 
@@ -36,16 +41,25 @@ namespace SIS.MvcFramework
 
             string htmlAsString = File.ReadAllText(path);
 
-            htmlAsString = this.FillWithData(htmlAsString);
+            string layoutContent = File.ReadAllText(layoutPath);
 
-            return new HtmlResult(htmlAsString, SIS.HTTP.Enums.HttpResponseStatusCode.Ok);
+            layoutContent = layoutContent.Replace("@RenderView", htmlAsString);
+
+            layoutContent = this.ViewEngine.TransformView(layoutContent,model);
+
+            return new HtmlResult(layoutContent, SIS.HTTP.Enums.HttpResponseStatusCode.Ok);
+        }
+
+        protected ActionResult View([CallerMemberName] string name = null)
+        {
+            return this.View<object>(null,name);
         }
 
         private string FillWithData(string htmlAsString)
         {
             foreach (var item in this.ViewData)
             {
-                htmlAsString = htmlAsString.Replace(item.Key,item.Value);
+                htmlAsString = htmlAsString.Replace(item.Key, item.Value);
             }
 
             return htmlAsString;
@@ -56,7 +70,7 @@ namespace SIS.MvcFramework
             return this.User != null;
         }
 
-        protected void SignIn(string id,string username,string email)
+        protected void SignIn(string id, string username, string email)
         {
             this.Request.Session.AddParameter
                 (
@@ -82,7 +96,7 @@ namespace SIS.MvcFramework
 
         protected ActionResult Xml(object param)
         {
-            return new XmlResult(param.ToXml(),HTTP.Enums.HttpResponseStatusCode.Ok);
+            return new XmlResult(param.ToXml(), HTTP.Enums.HttpResponseStatusCode.Ok);
         }
 
         protected ActionResult Json(object param)
@@ -100,6 +114,6 @@ namespace SIS.MvcFramework
             return new NotFoundResult(message, HTTP.Enums.HttpResponseStatusCode.Ok);
         }
 
-        
+
     }
 }

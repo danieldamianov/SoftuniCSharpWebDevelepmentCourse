@@ -1,54 +1,33 @@
-﻿<!DOCTYPE html>
-
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-
-<head>
-    <link rel="stylesheet"
-          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css " />
-
-
-
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <meta charset="utf-8" />
-    <title></title>
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="/">IRunes</a>
-            </div>
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="/">Home</a></li>
-                <li><a class="nav-link" href="/Albums/All">Albums  </a></li>
-                <li><a class="nav-link" href="/Users/Logout">Logout  </a></li>
-            </ul>
+﻿<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">IRunes</a>
         </div>
-    </nav>
-    <div>
-
-        <img src="@Link" alt="Alternate Text" />
-    </div>
-    <div>
-
-        <h3 class="text-info">Name: @AlbumName</h3>
-        <h3 class="text-info">Price: @AlbumPrice</h3>
-    </div>
-    <h1>Tracks</h1>
-    <hr />
-    <a class="btn btn-primary" href="/Tracks/Create?albumId=@albumId">CreateTrack</a>
-    <hr />
-    <div>
-        <ul>
-            @TracksLinks
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active"> <a class="nav-link" href="/">Home</a></li>
+            <li><a class="nav-link" href="/Albums/All">Albums  </a></li>
+            <li><a class="nav-link" href="/Users/Logout">Logout  </a></li>
         </ul>
-
     </div>
-    <hr />
-    <a class="btn btn-primary" href="/Albums/All">Back to all</a>
-</body>
-</html>
+</nav>
+<div>
+
+    <img src="@Link" alt="Alternate Text" />
+</div>
+<div>
+
+    <h3 class="text-info">Name: @AlbumName</h3>
+    <h3 class="text-info">Price: @AlbumPrice</h3>
+</div>
+<h1>Tracks</h1>
+<hr />
+<a class="btn btn-primary" href="/Tracks/Create?albumId=@albumId">CreateTrack</a>
+<hr />
+<div>
+    <ul>
+        @TracksLinks
+    </ul>
+
+</div>
+<hr />
+<a class="btn btn-primary" href="/Albums/All">Back to all</a>

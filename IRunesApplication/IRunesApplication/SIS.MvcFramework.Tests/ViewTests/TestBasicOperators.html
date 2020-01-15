@@ -1,0 +1,11 @@
+﻿@DateTime.Now.Year
+@for(int i = 0;i < 3;i++)
+{
+    @foreach(var j in new int[]{ 1,2,3,4,5,6})
+    {
+        @if(j % 3 == 0)
+        {
+<div accesskey="d"><h1>@i</h1><h2>@j</h2>></div>
+        }
+    }
+}
