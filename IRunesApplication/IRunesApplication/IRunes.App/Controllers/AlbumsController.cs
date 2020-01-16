@@ -1,4 +1,5 @@
-﻿using IRunes.Database;
+﻿using IRunes.App.ViewModels;
+using IRunes.Database;
 using IRunes.Database.Models;
 using IRunes.Services;
 using SIS.MvcFramework;
@@ -24,9 +25,11 @@ namespace IRunes.App.Controllers
         [Authorize]
         public ActionResult All()
         {
-            this.ViewData.Clear();
-            this.ViewData.Add("@ListOfAlbums", string.Join("<br>", this.albumsService.GetAllAlbums().Select(a => $"<a class=\"btn btn-primary\"  href=\"/Albums/Details?id={a.Id}\" >{a.Name}</a>")));
-            return this.View();
+            AlbumsAllViewModel albumCollectionViewModel = new AlbumsAllViewModel()
+            {
+                Albums = this.albumsService.GetAllAlbums().Select(album => new AlbumViewModel() { Id = album.Id , Name = album.Name}).ToList()
+            };
+            return this.View(albumCollectionViewModel);
 
         }
 
@@ -52,13 +55,14 @@ namespace IRunes.App.Controllers
         public ActionResult Details()
         {
             Album album = this.albumsService.GetAlbumById((string)this.Request.QueryData["id"]);
-            this.ViewData.Clear();
-            this.ViewData.Add("@Link", album.Cover);
-            this.ViewData.Add("@AlbumName", album.Name);
-            this.ViewData.Add("@AlbumPrice", album.Price.ToString());
+
             this.ViewData.Add("@TracksLinks", string.Join("<br>", album.Tracks.Select(t => $"<a class=\"btn btn-primary\" href=\"/Tracks/Details?albumId={album.Id}&trackId={t.Id}\">{t.Name}</a>")));
-            this.ViewData.Add("@albumId", album.Id);
-            return this.View();
+            return this.View(new AlbumDetailsViewModel() {
+                AlbumId = album.Id,
+                AlbumLink = album.Cover,
+                AlbumName = album.Name,
+                AlbumPrice = album.Price,
+                Tracks = album.Tracks.Select(t => new TrackViewModel() { Id = t.Id, Name = t.Name}).ToList()});
         }
 
     }

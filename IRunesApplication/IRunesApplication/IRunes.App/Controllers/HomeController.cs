@@ -1,4 +1,5 @@
-﻿using IRunes.Database;
+﻿using IRunes.App.ViewModels;
+using IRunes.Database;
 using SIS.HTTP.Identity;
 using SIS.MvcFramework;
 using SIS.MvcFramework.Attributes.HttpAttributes;
@@ -30,22 +31,11 @@ namespace IRunes.App.Controllers
             {
                 if (this.IsLogedIn())
                 {
-                    this.ViewData.Clear();
-                    this.ViewData.Add("@Username", ((Principal)this.Request.Session.GetParameter("principal")).Username);
-                    return this.LogedIn();
+                    return this.View(name: "LogedIn",model:
+                        new HomeLogedInViewModel() { Username = ((Principal)this.Request.Session.GetParameter("principal")).Username });
                 }
-                return this.LogedOut();
+                return this.View(name: "LogedOut");
             }
-        }
-
-        private ActionResult LogedOut()
-        {
-            return this.View();
-        }
-
-        private ActionResult LogedIn()
-        {
-            return this.View();
         }
     }
 }

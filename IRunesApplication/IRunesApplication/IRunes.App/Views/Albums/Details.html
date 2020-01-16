@@ -12,20 +12,23 @@
 </nav>
 <div>
 
-    <img src="@Link" alt="Alternate Text" />
+    <img src="@Model.AlbumLink" alt="Alternate Text" />
 </div>
 <div>
 
-    <h3 class="text-info">Name: @AlbumName</h3>
-    <h3 class="text-info">Price: @AlbumPrice</h3>
+    <h3 class="text-info">Name: @Model.AlbumName</h3>
+    <h3 class="text-info">Price: @Model.AlbumPrice</h3>
 </div>
 <h1>Tracks</h1>
 <hr />
-<a class="btn btn-primary" href="/Tracks/Create?albumId=@albumId">CreateTrack</a>
+<a class="btn btn-primary" href="/Tracks/Create?albumId=@Model.AlbumId">CreateTrack</a>
 <hr />
 <div>
     <ul>
-        @TracksLinks
+        @foreach(var track in @Model.Tracks)
+        {
+        <li><a class="btn btn-primary" href="/Tracks/Details?albumId=@Model.AlbumId&trackId=@track.Id">@track.Name</a></li>
+        }
     </ul>
 
 </div>

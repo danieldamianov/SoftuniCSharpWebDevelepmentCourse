@@ -16,7 +16,7 @@ namespace SIS.MvcFramework.ViewEngine
         {
             string cSharpCodeForFillingTheStringBuilder = GetCSharpCodeForFillingTheStringBuilder(viewContent);
 
-            string virtualMethod = $@"
+            string virtualMethod = model != null ? $@"
 using System;
 using System.Linq;
 using System.Text;
@@ -40,8 +40,33 @@ namespace CustomRazor
         }}
     }}
 }}
-";
-            IView view = CompileAndIntance(virtualMethod,model.GetType().Assembly);
+" :
+$@"
+using System;
+using System.Linq;
+using System.Text;
+using System.Collections.Generic;
+using SIS.MvcFramework.ViewEngine;
+
+namespace CustomRazor
+{{
+    public class CustomViewEngine : IView
+    {{
+        public string GetHtml(object model)
+        {{
+            
+            var html = new StringBuilder();
+
+            {cSharpCodeForFillingTheStringBuilder}
+
+            return html.ToString();
+
+        }}
+    }}
+}}
+"
+;
+            IView view = CompileAndIntance(virtualMethod, model?.GetType().Assembly);
 
             return view.GetHtml(model);
         }
@@ -51,8 +76,12 @@ namespace CustomRazor
             var compilation = CSharpCompilation.Create("ViewEngineAssembly")
                 .WithOptions(new CSharpCompilationOptions(Microsoft.CodeAnalysis.OutputKind.DynamicallyLinkedLibrary))
                 .AddReferences(MetadataReference.CreateFromFile(typeof(object).Assembly.Location))
-                .AddReferences(MetadataReference.CreateFromFile(typeof(IView).Assembly.Location))
-                .AddReferences(MetadataReference.CreateFromFile(assembly.Location));
+                .AddReferences(MetadataReference.CreateFromFile(typeof(IView).Assembly.Location));
+
+            if (assembly != null)
+            {
+                compilation = compilation.AddReferences(MetadataReference.CreateFromFile(assembly.Location));
+            }
 
             var netStandardAssembly = Assembly.Load(new AssemblyName("netstandard")).GetReferencedAssemblies();
             foreach (var assemblyStandart in netStandardAssembly)
@@ -92,7 +121,7 @@ namespace CustomRazor
         private string GetCSharpCodeForFillingTheStringBuilder(string viewContent)
         {
             string CSharpCodeForAppendingTheHtml = string.Empty;
-            var supportedOperators = new string[] { "for","foreach","if","else"};
+            var supportedOperators = new string[] { "for", "foreach", "if", "else" };
 
             foreach (var line in viewContent.Split(Environment.NewLine))
             {
@@ -109,11 +138,11 @@ namespace CustomRazor
                 {
                     if (line.Contains("@") == false)
                     {
-                        CSharpCodeForAppendingTheHtml += $"html.AppendLine(@\"{line.Replace("\"","\"\"")}\");";
+                        CSharpCodeForAppendingTheHtml += $"html.AppendLine(@\"{line.Replace("\"", "\"\"")}\");";
                     }
                     else
                     {
-                        var appendLineCode = $"html.AppendLine(@\""; // html.AppendLine(@"<div>"
+                        var appendLineCode = $"html.AppendLine(@\""; // html.AppendLine(@"
 
                         var lineCopy = line;
 
@@ -123,11 +152,12 @@ namespace CustomRazor
 
                             appendLineCode += lineCopy.Substring(0, idexOfAt).Replace("\"", "\"\"");
 
-                            var CSharpCodeRegex = new Regex(@"[^\s""<]+",RegexOptions.Compiled);
+                            var CSharpCodeRegex = new Regex(@"[^\s""<&]+", RegexOptions.Compiled);
 
                             var CSharpExpr = CSharpCodeRegex.Match(lineCopy.Substring(idexOfAt + 1))?.Value;
 
-                            appendLineCode += "\"" + $" + {CSharpExpr} + @\"";
+                            //appendLineCode += "\"" + $" + {CSharpExpr} + " + @\"";
+                            appendLineCode += "\" + " + CSharpExpr + " + @\"";
 
                             if (lineCopy.Length <= idexOfAt + CSharpExpr.Length + 1)
                             {
@@ -139,7 +169,7 @@ namespace CustomRazor
                             }
                         }
 
-                        appendLineCode += $"{lineCopy}\");";
+                        appendLineCode += $"{lineCopy.Replace("\"", "\"\"")}\");";
                         CSharpCodeForAppendingTheHtml += appendLineCode;
                     }
                 }

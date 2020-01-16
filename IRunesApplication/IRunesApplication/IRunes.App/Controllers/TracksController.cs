@@ -1,4 +1,5 @@
 ﻿
+using IRunes.App.ViewModels;
 using IRunes.Database.Models;
 using IRunes.Services;
 using SIS.MvcFramework;
@@ -26,9 +27,7 @@ namespace IRunes.App.Controllers
         public ActionResult Create()
         {
             string albumId = (string)this.Request.QueryData["albumId"];
-            this.ViewData.Clear();
-            this.ViewData.Add("@albumId", albumId);
-            return this.View();
+            return this.View(new TrackCreateViewModel { AlbumId = albumId});
         }
 
         [Authorize]
@@ -59,13 +58,14 @@ namespace IRunes.App.Controllers
             string trackId = (string)this.Request.QueryData["trackId"];
 
             Track track = this.trackService.GetTrackById(trackId);
-            this.ViewData.Clear();
-            this.ViewData.Add("@Link", track.Link);
-            this.ViewData.Add("@Name", track.Name);
-            this.ViewData.Add("@Price", track.Price.ToString());
-            this.ViewData.Add("@albumId", albumId);
 
-            return this.View();
+            return this.View(new TrackDetailsViewModel()
+            {
+                AlbumId = albumId,
+                TrackLink = track.Link,
+                TrackName = track.Name,
+                TrackPrice = track.Price
+            });
         }
     }
 }
