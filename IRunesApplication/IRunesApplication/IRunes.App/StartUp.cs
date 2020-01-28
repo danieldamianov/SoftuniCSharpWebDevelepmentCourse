@@ -1,10 +1,11 @@
 ﻿using IRunes.App.Controllers;
 using IRunes.Database;
+using IRunes.Services;
 using SIS.HTTP.Enums;
 using SIS.MvcFramework;
+using SIS.MvcFramework.DependencyContainer;
 using SIS.MvcFramework.Results;
 using SIS.MvcFramework.Routing;
-using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -38,9 +39,11 @@ namespace IRunes.App
             //serverRoutingTable.Add(HttpRequestMethod.Post, "/Tracks/Create", new TracksController().HandleCreatingTrack);
         }
 
-        public void ConfigureServices()
+        public void ConfigureServices(IServiceProvider serviceProvider)
         {
-
+            serviceProvider.Add<IAlbumsService, AlbumsService>();
+            serviceProvider.Add<ITrackService, TrackService>();
+            serviceProvider.Add<IUserService, UserService>();
         }
     }
 }

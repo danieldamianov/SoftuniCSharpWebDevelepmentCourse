@@ -1,5 +1,5 @@
-﻿using SIS.MvcFramework.Routing;
-using System;
+﻿using SIS.MvcFramework.DependencyContainer;
+using SIS.MvcFramework.Routing;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,6 +9,6 @@ namespace SIS.MvcFramework
     {
         void Configure(IServerRoutingTable serverRoutingTable);
 
-        void ConfigureServices();
+        void ConfigureServices(IServiceProvider serviceProvider);
     }
 }

@@ -5,14 +5,19 @@ using System.Text;
 
 namespace SIS.HTTP.Sessions
 {
-    public class HttpSessionStorage
+    public class HttpSessionStorage : IHttpSessionStorage
     {
+        public HttpSessionStorage()
+        {
+            this.sessions = new ConcurrentDictionary<string, IHttpSession>();
+        }
+
         public const string SessionCookieKey = "SIS_ID";
 
-        private static readonly ConcurrentDictionary<string, IHttpSession> sessions
+        private readonly ConcurrentDictionary<string, IHttpSession> sessions
             = new ConcurrentDictionary<string, IHttpSession>();
 
-        public static IHttpSession GetSession(string id)
+        public IHttpSession GetSession(string id)
         {
             return sessions.GetOrAdd(id, _ => new HttpSession(id));
         }

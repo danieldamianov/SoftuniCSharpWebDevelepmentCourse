@@ -17,16 +17,19 @@ namespace SIS.MvcFramework
 {
     class ConnectionHandler
     {
+        private readonly IHttpSessionStorage httpSessionStorage;
         private readonly Socket client;
         private readonly IServerRoutingTable serverRoutingTable;
 
-        public ConnectionHandler(Socket client, IServerRoutingTable serverRoutingTable)
+        public ConnectionHandler(Socket client, IServerRoutingTable serverRoutingTable, IHttpSessionStorage httpSessionStorage)
         {
             CoreValidator.ThrowIfNull(client, nameof(client));
             CoreValidator.ThrowIfNull(serverRoutingTable, nameof(serverRoutingTable));
+            CoreValidator.ThrowIfNull(serverRoutingTable, nameof(httpSessionStorage));
 
             this.client = client;
             this.serverRoutingTable = serverRoutingTable;
+            this.httpSessionStorage = httpSessionStorage;
         }
 
         public async Task ProcessRequestAsync()
@@ -72,12 +75,12 @@ namespace SIS.MvcFramework
             {
                 var cookie = httpRequest.Cookies.GetHttpCookie(HttpSessionStorage.SessionCookieKey);
                 sessionId = cookie.Value;
-                httpRequest.Session = HttpSessionStorage.GetSession(sessionId);
+                httpRequest.Session = this.httpSessionStorage.GetSession(sessionId);
             }
             else
             {
                 sessionId = Guid.NewGuid().ToString();
-                httpRequest.Session = HttpSessionStorage.GetSession(sessionId);
+                httpRequest.Session = this.httpSessionStorage.GetSession(sessionId);
             }
 
             return sessionId;

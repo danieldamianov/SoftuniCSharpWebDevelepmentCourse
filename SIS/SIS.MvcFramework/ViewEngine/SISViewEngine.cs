@@ -123,7 +123,7 @@ namespace CustomRazor
             string CSharpCodeForAppendingTheHtml = string.Empty;
             var supportedOperators = new string[] { "for", "foreach", "if", "else" };
 
-            foreach (var line in viewContent.Split(Environment.NewLine))
+            foreach (var line in viewContent.Split(new string[] { "\r\n","\n","\n\r"},StringSplitOptions.None))
             {
                 if (line.TrimStart().StartsWith("{") || line.TrimStart().StartsWith("}"))
                 {

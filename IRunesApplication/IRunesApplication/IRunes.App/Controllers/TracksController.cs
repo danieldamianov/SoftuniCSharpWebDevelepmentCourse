@@ -14,14 +14,14 @@ namespace IRunes.App.Controllers
 {
     public class TracksController : Controller
     {
-        public TracksController()
+        public TracksController(IAlbumsService albumsService, ITrackService trackService)
         {
-            this.albumsService = new AlbumsService();
-            this.trackService = new TrackService();
+            this.albumsService = albumsService;
+            this.trackService = trackService;
         }
 
-        IAlbumsService albumsService;
-        ITrackService trackService;
+        private readonly IAlbumsService albumsService;
+        private readonly ITrackService trackService;
 
         [Authorize]
         public ActionResult Create()

@@ -15,12 +15,12 @@ namespace IRunes.App.Controllers
 {
     public class AlbumsController : Controller
     {
-        public AlbumsController()
+        public AlbumsController(IAlbumsService albumsService)
         {
-            this.albumsService = new AlbumsService();
+            this.albumsService = albumsService;
         }
 
-        IAlbumsService albumsService;
+        private readonly IAlbumsService albumsService;
 
         [Authorize]
         public ActionResult All()

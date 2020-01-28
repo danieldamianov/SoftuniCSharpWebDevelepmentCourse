@@ -1,5 +1,6 @@
 ﻿using SIS.HTTP.Enums;
 using SIS.HTTP.Responses;
+using SIS.HTTP.Sessions;
 using SIS.MvcFramework.Attributes.ActionAttributes;
 using SIS.MvcFramework.Attributes.HttpAttributes;
 using SIS.MvcFramework.Attributes.SecurityAttributes;
@@ -18,16 +19,23 @@ namespace SIS.MvcFramework
         public static void Run(IMvcApplication startUp)
         {
             IServerRoutingTable serverRoutingTable = new ServerRoutingTable();
-            AutoRegisterRoutes(startUp, serverRoutingTable);
-            startUp.Configure(serverRoutingTable);
-            startUp.ConfigureServices();
+            IHttpSessionStorage httpSessionStorage = new HttpSessionStorage();
+            DependencyContainer.IServiceProvider serviceProvider = new DependencyContainer.ServiceProvider();
 
-            var server = new Server(8000, serverRoutingTable);
+            startUp.ConfigureServices(serviceProvider);
+
+            AutoRegisterRoutes(startUp, serverRoutingTable,serviceProvider);
+
+            startUp.Configure(serverRoutingTable);
+
+            var server = new Server(8000, serverRoutingTable,httpSessionStorage);
             server.Run();
 
         }
 
-        private static void AutoRegisterRoutes(IMvcApplication startUp, IServerRoutingTable serverRoutingTable)
+        private static void AutoRegisterRoutes(IMvcApplication startUp
+            , IServerRoutingTable serverRoutingTable
+            , DependencyContainer.IServiceProvider serviceProvider)
         {
             Assembly applicationAssembly = startUp.GetType().Assembly;
 
@@ -72,11 +80,11 @@ namespace SIS.MvcFramework
                     serverRoutingTable.Add(httpRequestMethod, url, (request)
                           =>
                       {
-                          var controllerInstance = Activator.CreateInstance(controller);
-                          ((Controller)controllerInstance).Request = request;
+                          var controllerInstance = serviceProvider.CreateInstance(controller) as Controller;
+                          controllerInstance.Request = request;
                           AuthorizeAttribute authorizeAttribute = method.GetCustomAttribute<AuthorizeAttribute>();
                           if (authorizeAttribute != null
-                          && !authorizeAttribute.IsAuthorized(((Controller)controllerInstance).User))
+                          && !authorizeAttribute.IsAuthorized(controllerInstance.User))
                           {
                               return new RedirectResult("/");
                           }

@@ -1,4 +1,5 @@
-﻿using SIS.MvcFramework.Routing;
+﻿using SIS.HTTP.Sessions;
+using SIS.MvcFramework.Routing;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -19,14 +20,17 @@ namespace SIS.MvcFramework
 
         private readonly IServerRoutingTable serverRoutingTable;
 
+        private readonly IHttpSessionStorage httpSessionStorage;
+
         private bool isRunning;
 
-        public Server(int port, IServerRoutingTable serverRoutingTable)
+        public Server(int port, IServerRoutingTable serverRoutingTable, IHttpSessionStorage httpSessionStorage)
         {
             this.port = port;
             tcpListener = new TcpListener(IPAddress.Parse(LocalHostIpAddress), this.port);
 
             this.serverRoutingTable = serverRoutingTable;
+            this.httpSessionStorage = httpSessionStorage;
         }
 
         public void Run()
@@ -47,7 +51,7 @@ namespace SIS.MvcFramework
 
         public async Task Listen(Socket client)
         {
-            var connectionHandler = new ConnectionHandler(client, serverRoutingTable);
+            var connectionHandler = new ConnectionHandler(client, serverRoutingTable, this.httpSessionStorage);
             //await Task.Run(() => Thread.Sleep(10000));
             await connectionHandler.ProcessRequestAsync();
         }
