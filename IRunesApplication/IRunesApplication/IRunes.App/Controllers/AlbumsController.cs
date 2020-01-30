@@ -52,9 +52,9 @@ namespace IRunes.App.Controllers
         }
 
         [Authorize]
-        public ActionResult Details()
+        public ActionResult Details(string id)
         {
-            Album album = this.albumsService.GetAlbumById((string)this.Request.QueryData["id"]);
+            Album album = this.albumsService.GetAlbumById(id);
 
             this.ViewData.Add("@TracksLinks", string.Join("<br>", album.Tracks.Select(t => $"<a class=\"btn btn-primary\" href=\"/Tracks/Details?albumId={album.Id}&trackId={t.Id}\">{t.Name}</a>")));
             return this.View(new AlbumDetailsViewModel() {

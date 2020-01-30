@@ -1,5 +1,6 @@
 ﻿
 using IRunes.App.ViewModels;
+using IRunes.App.ViewModels.InputViewModels.Tracks;
 using IRunes.Database.Models;
 using IRunes.Services;
 using SIS.MvcFramework;
@@ -24,21 +25,22 @@ namespace IRunes.App.Controllers
         private readonly ITrackService trackService;
 
         [Authorize]
-        public ActionResult Create()
+        public ActionResult Create(string albumId)
         {
-            string albumId = (string)this.Request.QueryData["albumId"];
             return this.View(new TrackCreateViewModel { AlbumId = albumId});
         }
 
         [Authorize]
-        [HttpPost(ActionName = "Create")]
-        public ActionResult HandleCreatingTrack()
+        [HttpPost]
+        public ActionResult Create(TrackCreateInputViewModel model)
         {
-            string albumId = (string)this.Request.QueryData["albumId"];
+            string albumId = model.AlbumId;
 
-            string trackName = (string)this.Request.FormData["name"];
-            string link = (string)this.Request.FormData["link"];
-            decimal price = decimal.Parse((string)this.Request.FormData["price"]);
+            string trackName = model.Name;
+
+            string link = model.Link;
+
+            decimal price = model.Price;
 
             this.albumsService.AddTrackToAlbum(albumId, new Track()
             {
@@ -52,10 +54,10 @@ namespace IRunes.App.Controllers
         }
 
         [Authorize]
-        public ActionResult Details()
+        public ActionResult Details(TrackDetailsInputViewModel model)
         {
-            string albumId = (string)this.Request.QueryData["albumId"];
-            string trackId = (string)this.Request.QueryData["trackId"];
+            string albumId = model.AlbumId;
+            string trackId = model.TrackId;
 
             Track track = this.trackService.GetTrackById(trackId);
 

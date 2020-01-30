@@ -1,4 +1,5 @@
 ﻿using SIS.HTTP.Enums;
+using SIS.HTTP.Requests;
 using SIS.HTTP.Responses;
 using SIS.HTTP.Sessions;
 using SIS.MvcFramework.Attributes.ActionAttributes;
@@ -88,7 +89,40 @@ namespace SIS.MvcFramework
                           {
                               return new RedirectResult("/");
                           }
-                          var response = method.Invoke(controllerInstance, new object[0] { });
+
+                          var parametersInfos = method.GetParameters();
+                          var parametersInstances = new List<object>();
+
+                          foreach (var parameterInfo in parametersInfos)
+                          {
+                              var parameterName = parameterInfo.Name;
+                              var parameterType = parameterInfo.ParameterType;
+
+                              var parameterValue = GetValue(request, parameterName);
+                              object parameterValueConverted;
+                              try
+                              {
+                                  parameterValueConverted = System.Convert.ChangeType(parameterValue, parameterType);
+                                  if (parameterValueConverted == null)
+                                  {
+                                      throw new Exception();
+                                  }
+                              }
+                              catch (Exception)
+                              {
+                                  parameterValueConverted = Activator.CreateInstance(parameterType);
+                                  foreach (var property in parameterType.GetProperties())
+                                  {
+                                      var propertyValueFromRequest = GetValue(request, property.Name);
+                                      var propertyValueFromRequestConverted = Convert.ChangeType(propertyValueFromRequest, property.PropertyType);
+                                      property.SetValue(parameterValueConverted, propertyValueFromRequestConverted);
+                                  }
+                              }
+
+                              parametersInstances.Add(parameterValueConverted);
+                          }
+
+                          var response = method.Invoke(controllerInstance, parametersInstances.ToArray());
                           return response as IHttpResponse;
                       });
 
@@ -96,6 +130,23 @@ namespace SIS.MvcFramework
 
                 }
             }
+        }
+
+        private static object GetValue(IHttpRequest request, string parameterName)
+        {
+            object value = null;
+
+            if (request.QueryData.Any(parameter => parameterName.ToLower() == parameter.Key.ToLower()))
+            {
+                value = request.QueryData.FirstOrDefault(parameter => parameter.Key.ToLower() == parameterName.ToLower()).Value;
+            }
+
+            if (request.FormData.Any(parameter => parameterName.ToLower() == parameter.Key.ToLower()))
+            {
+                value = request.FormData.FirstOrDefault(parameter => parameter.Key.ToLower() == parameterName.ToLower()).Value;
+            }
+
+            return value;
         }
     }
 }
