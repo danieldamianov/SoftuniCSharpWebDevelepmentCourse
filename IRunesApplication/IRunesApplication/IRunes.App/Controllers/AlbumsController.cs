@@ -41,10 +41,10 @@ namespace IRunes.App.Controllers
 
         [Authorize]
         [HttpPost(ActionName = "Create")]
-        public ActionResult HandleCreatingAlbum()
+        public ActionResult HandleCreatingAlbum(string name,string cover)
         {
-            string name = (string)this.Request.FormData["name"];
-            string cover = (string)this.Request.FormData["cover"];
+            //string name = (string)this.Request.FormData["name"];
+            //string cover = (string)this.Request.FormData["cover"];
 
             this.albumsService.AddAlbum(new Album() { Name = HttpUtility.UrlDecode(name), Cover = HttpUtility.UrlDecode(cover), Id = Guid.NewGuid().ToString() });
 

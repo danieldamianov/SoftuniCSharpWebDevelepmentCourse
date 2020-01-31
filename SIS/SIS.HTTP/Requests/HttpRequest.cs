@@ -18,8 +18,8 @@ namespace SIS.HTTP.Requests
         {
             CoreValidator.ThrowIfNullOrEmpty(requestString, nameof(requestString));
 
-            this.FormData = new Dictionary<string, object>();
-            this.QueryData = new Dictionary<string, object>();
+            this.FormData = new Dictionary<string, ISet<string>>();
+            this.QueryData = new Dictionary<string, ISet<string>>();
             this.Headers = new HttpHeaderCollection();
             this.Cookies = new HttpCookieCollection();
 
@@ -30,9 +30,9 @@ namespace SIS.HTTP.Requests
 
         public string Url { get; private set; }
 
-        public Dictionary<string, object> FormData { get; }
+        public Dictionary<string, ISet<string>> FormData { get; }
 
-        public Dictionary<string, object> QueryData { get; }
+        public Dictionary<string, ISet<string>> QueryData { get; }
 
         public HttpRequestMethod RequestMethod { get; private set; }
 
@@ -114,7 +114,14 @@ namespace SIS.HTTP.Requests
             this.IsValidRequestQueryString(queryParamsString, queryParams);
             foreach (var param in queryParams)
             {
-                this.QueryData.Add(param.Split('=')[0], param.Split('=')[1]);
+                var paramSplitted = param.Split('=');
+                var key = paramSplitted[0];
+                var value = paramSplitted[1];
+                if (this.QueryData.ContainsKey(key) == false)
+                {
+                    this.QueryData.Add(key, new HashSet<string>());
+                }
+                this.QueryData[key].Add(value);
             }
         }
 
@@ -124,10 +131,21 @@ namespace SIS.HTTP.Requests
             {
                 return;
             }
-            string[] queryParams = formData.Split(new char[] { '&' });
-            foreach (var param in queryParams)
+            string[] formDataParams = formData.Split(new char[] { '&' });
+            //foreach (var param in formDataParams)
+            //{
+            //    this.FormData.Add(param.Split('=')[0], param.Split('=')[1]);
+            //}
+            foreach (var param in formDataParams)
             {
-                this.FormData.Add(param.Split('=')[0], param.Split('=')[1]);
+                var paramSplitted = param.Split('=');
+                var key = paramSplitted[0];
+                var value = paramSplitted[1];
+                if (this.FormData.ContainsKey(key) == false)
+                {
+                    this.FormData.Add(key, new HashSet<string>());
+                }
+                this.FormData[key].Add(value);
             }
         }
 

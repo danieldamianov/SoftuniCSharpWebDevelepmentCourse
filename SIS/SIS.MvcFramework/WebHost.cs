@@ -25,11 +25,11 @@ namespace SIS.MvcFramework
 
             startUp.ConfigureServices(serviceProvider);
 
-            AutoRegisterRoutes(startUp, serverRoutingTable,serviceProvider);
+            AutoRegisterRoutes(startUp, serverRoutingTable, serviceProvider);
 
             startUp.Configure(serverRoutingTable);
 
-            var server = new Server(8000, serverRoutingTable,httpSessionStorage);
+            var server = new Server(8000, serverRoutingTable, httpSessionStorage);
             server.Run();
 
         }
@@ -99,13 +99,16 @@ namespace SIS.MvcFramework
                               var parameterType = parameterInfo.ParameterType;
 
                               var parameterValue = GetValue(request, parameterName);
-                              object parameterValueConverted;
+                              object parameterValueConverted = null;
                               try
                               {
-                                  parameterValueConverted = System.Convert.ChangeType(parameterValue, parameterType);
-                                  if (parameterValueConverted == null)
+                                  if ((parameterValue as ISet<string>).Count == 1)
                                   {
-                                      throw new Exception();
+                                      parameterValueConverted = Convert.ChangeType((parameterValue as ISet<string>).First(), parameterType);
+                                      if (parameterValueConverted == null)
+                                      {
+                                          throw new Exception();
+                                      }
                                   }
                               }
                               catch (Exception)
@@ -113,8 +116,12 @@ namespace SIS.MvcFramework
                                   parameterValueConverted = Activator.CreateInstance(parameterType);
                                   foreach (var property in parameterType.GetProperties())
                                   {
-                                      var propertyValueFromRequest = GetValue(request, property.Name);
-                                      var propertyValueFromRequestConverted = Convert.ChangeType(propertyValueFromRequest, property.PropertyType);
+                                      var propertyValueFromRequest = GetValue(request, property.Name) as ISet<string>;
+                                      object propertyValueFromRequestConverted = null;
+                                      if (propertyValueFromRequest.Count == 1)
+                                      {
+                                          propertyValueFromRequestConverted = Convert.ChangeType(propertyValueFromRequest.First(), property.PropertyType); 
+                                      }
                                       property.SetValue(parameterValueConverted, propertyValueFromRequestConverted);
                                   }
                               }
