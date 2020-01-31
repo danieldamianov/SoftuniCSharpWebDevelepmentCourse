@@ -98,31 +98,55 @@ namespace SIS.MvcFramework
                               var parameterName = parameterInfo.Name;
                               var parameterType = parameterInfo.ParameterType;
 
-                              var parameterValue = GetValue(request, parameterName);
+                              var parameterValue = GetValue(request, parameterName) as ISet<string>;
                               object parameterValueConverted = null;
                               try
                               {
-                                  if ((parameterValue as ISet<string>).Count == 1)
+                                  if (parameterValue == null) // NOT FOUND AND COMPLEX TYPE
                                   {
-                                      parameterValueConverted = Convert.ChangeType((parameterValue as ISet<string>).First(), parameterType);
-                                      if (parameterValueConverted == null)
+                                      throw new Exception();
+                                  }
+
+                                  if (parameterValue.Count == 1) // SIMPLE TYPE
+                                  {
+                                      parameterValueConverted = Convert.ChangeType(parameterValue.First(), parameterType);
+                                      
+                                  }
+                                  else // COLLECTION
+                                  {
+                                      parameterValueConverted = Activator.CreateInstance(parameterType) as IList<string>;
+                                      parameterValueConverted = parameterValue.Select(parameter =>
                                       {
-                                          throw new Exception();
-                                      }
+                                          Type[] genericArguments = parameterType.GetGenericArguments();
+                                          Type conversionType = genericArguments[0];
+                                          return Convert.ChangeType(parameter, conversionType);
+                                      }).ToList();
                                   }
                               }
                               catch (Exception)
                               {
-                                  parameterValueConverted = Activator.CreateInstance(parameterType);
-                                  foreach (var property in parameterType.GetProperties())
+                                  if (parameterType.GetInterface("IEnumerable") == null)
                                   {
-                                      var propertyValueFromRequest = GetValue(request, property.Name) as ISet<string>;
-                                      object propertyValueFromRequestConverted = null;
-                                      if (propertyValueFromRequest.Count == 1)
+                                      parameterValueConverted = Activator.CreateInstance(parameterType);
+                                      foreach (var property in parameterType.GetProperties())
                                       {
-                                          propertyValueFromRequestConverted = Convert.ChangeType(propertyValueFromRequest.First(), property.PropertyType); 
-                                      }
-                                      property.SetValue(parameterValueConverted, propertyValueFromRequestConverted);
+                                          var propertyValueFromRequest = GetValue(request, property.Name) as ISet<string>;
+                                          object propertyValueFromRequestConverted = null;
+                                          if (propertyValueFromRequest.Count == 1)
+                                          {
+                                              propertyValueFromRequestConverted = Convert.ChangeType(propertyValueFromRequest.First(), property.PropertyType);
+                                          }
+                                          else
+                                          {
+                                              propertyValueFromRequestConverted = propertyValueFromRequest.Select(parameter =>
+                                              {
+                                                  Type[] genericArguments = property.PropertyType.GetGenericArguments();
+                                                  Type conversionType = genericArguments[0];
+                                                  return Convert.ChangeType(parameter, conversionType);
+                                              }).ToList();
+                                          }
+                                          property.SetValue(parameterValueConverted, propertyValueFromRequestConverted);
+                                      } 
                                   }
                               }
 

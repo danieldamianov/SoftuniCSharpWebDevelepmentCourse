@@ -8,6 +8,7 @@ using SIS.MvcFramework.Attributes.SecurityAttributes;
 using SIS.MvcFramework.Results;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
@@ -23,7 +24,7 @@ namespace IRunes.App.Controllers
         private readonly IAlbumsService albumsService;
 
         [Authorize]
-        public ActionResult All()
+        public ActionResult All(List<string> values)
         {
             AlbumsAllViewModel albumCollectionViewModel = new AlbumsAllViewModel()
             {
@@ -41,7 +42,7 @@ namespace IRunes.App.Controllers
 
         [Authorize]
         [HttpPost(ActionName = "Create")]
-        public ActionResult HandleCreatingAlbum(string name,string cover)
+        public ActionResult HandleCreatingAlbum(string name,string cover,List<string> values)
         {
             //string name = (string)this.Request.FormData["name"];
             //string cover = (string)this.Request.FormData["cover"];
