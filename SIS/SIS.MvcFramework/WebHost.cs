@@ -8,6 +8,7 @@ using SIS.MvcFramework.Attributes.SecurityAttributes;
 using SIS.MvcFramework.Results;
 using SIS.MvcFramework.Routing;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -110,17 +111,28 @@ namespace SIS.MvcFramework
                                   if (parameterValue.Count == 1) // SIMPLE TYPE
                                   {
                                       parameterValueConverted = Convert.ChangeType(parameterValue.First(), parameterType);
-                                      
+
                                   }
                                   else // COLLECTION
                                   {
-                                      parameterValueConverted = Activator.CreateInstance(parameterType) as IList<string>;
+
                                       parameterValueConverted = parameterValue.Select(parameter =>
                                       {
                                           Type[] genericArguments = parameterType.GetGenericArguments();
                                           Type conversionType = genericArguments[0];
                                           return Convert.ChangeType(parameter, conversionType);
                                       }).ToList();
+
+                                      var instanceOfCollection = Activator.CreateInstance(typeof(List<>)
+                                          .MakeGenericType(parameterType.GetGenericArguments()[0]))
+                                      as IList;
+
+                                      foreach (var item in parameterValueConverted as List<object>)
+                                      {
+                                          instanceOfCollection.Add(item);
+                                      }
+
+                                      parameterValueConverted = instanceOfCollection;
                                   }
                               }
                               catch (Exception)
@@ -132,7 +144,11 @@ namespace SIS.MvcFramework
                                       {
                                           var propertyValueFromRequest = GetValue(request, property.Name) as ISet<string>;
                                           object propertyValueFromRequestConverted = null;
-                                          if (propertyValueFromRequest.Count == 1)
+                                          if (propertyValueFromRequest == null)
+                                          {
+
+                                          }
+                                          else if (propertyValueFromRequest.Count == 1)
                                           {
                                               propertyValueFromRequestConverted = Convert.ChangeType(propertyValueFromRequest.First(), property.PropertyType);
                                           }
@@ -144,13 +160,25 @@ namespace SIS.MvcFramework
                                                   Type conversionType = genericArguments[0];
                                                   return Convert.ChangeType(parameter, conversionType);
                                               }).ToList();
+
+                                              var instanceOfCollection = Activator.CreateInstance(typeof(List<>)
+                                                .MakeGenericType(property.PropertyType.GetGenericArguments()[0]))
+                                                 as IList;
+
+                                              foreach (var item in propertyValueFromRequestConverted as List<object>)
+                                              {
+                                                  instanceOfCollection.Add(item);
+                                              }
+
+                                              propertyValueFromRequestConverted = instanceOfCollection;
                                           }
                                           property.SetValue(parameterValueConverted, propertyValueFromRequestConverted);
-                                      } 
+                                      }
                                   }
                               }
 
                               parametersInstances.Add(parameterValueConverted);
+
                           }
 
                           var response = method.Invoke(controllerInstance, parametersInstances.ToArray());

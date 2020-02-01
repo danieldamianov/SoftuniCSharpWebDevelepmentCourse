@@ -1,14 +1,11 @@
 ﻿using IRunes.App.ViewModels;
-using IRunes.Database;
 using IRunes.Database.Models;
 using IRunes.Services;
 using SIS.MvcFramework;
 using SIS.MvcFramework.Attributes.HttpAttributes;
 using SIS.MvcFramework.Attributes.SecurityAttributes;
 using SIS.MvcFramework.Results;
-
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
@@ -24,7 +21,7 @@ namespace IRunes.App.Controllers
         private readonly IAlbumsService albumsService;
 
         [Authorize]
-        public ActionResult All(List<string> values)
+        public ActionResult All()
         {
             AlbumsAllViewModel albumCollectionViewModel = new AlbumsAllViewModel()
             {
@@ -42,11 +39,8 @@ namespace IRunes.App.Controllers
 
         [Authorize]
         [HttpPost(ActionName = "Create")]
-        public ActionResult HandleCreatingAlbum(string name,string cover,List<string> values)
+        public ActionResult HandleCreatingAlbum(string name,string cover)
         {
-            //string name = (string)this.Request.FormData["name"];
-            //string cover = (string)this.Request.FormData["cover"];
-
             this.albumsService.AddAlbum(new Album() { Name = HttpUtility.UrlDecode(name), Cover = HttpUtility.UrlDecode(cover), Id = Guid.NewGuid().ToString() });
 
             return this.Redirect("/Albums/All");

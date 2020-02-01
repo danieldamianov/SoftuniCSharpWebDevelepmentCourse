@@ -11,15 +11,6 @@ namespace IRunes.App.Controllers
 {
     public class HomeController : Controller
     {
-
-        //public ActionResult Do()
-        //{
-        //    Person user = new Person() { Age = 3 ,Name = "adsd"};
-        //    return new FileResult(File.ReadAllBytes(@"D:\test.txt"), SIS.HTTP.Enums.HttpResponseStatusCode.Ok);
-        //    //return this.Json(user);
-        //}
-
-
         [HttpGet(Url = "/")]
         public ActionResult HomePageSlash()
         {

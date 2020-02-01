@@ -30,10 +30,6 @@ namespace IRunes.App.Controllers
         [HttpPost(ActionName = "Register")]
         public ActionResult HandleRegistration(string username,string password,string confirmPassword)
         {
-            //string username = (string)this.Request.FormData["username"];
-            //string password = (string)this.Request.FormData["password"];
-            //string confirmPassword = (string)this.Request.FormData["confirmPassword"];
-
             if (password != confirmPassword || this.userService.IsUsernameTaken(username))
             {
                 return this.Redirect("/Users/Register");
@@ -63,9 +59,6 @@ namespace IRunes.App.Controllers
         [HttpPost(ActionName = "Login")]
         public ActionResult HandleLogingIn(string password,string username)
         {
-            //string password = (string)this.Request.FormData["password"];
-            //string username = (string)this.Request.FormData["username"];
-
             User user = this.userService.GetUserByUsernameAndPassword(username, password);
 
             if (user == null)
