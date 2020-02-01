@@ -123,22 +123,51 @@ namespace CustomRazor
             string CSharpCodeForAppendingTheHtml = string.Empty;
             var supportedOperators = new string[] { "for", "foreach", "if", "else" };
 
-            foreach (var line in viewContent.Split(new string[] { "\r\n","\n","\n\r"},StringSplitOptions.None))
+            int bracketsInCSharpCode = 0;
+
+            foreach (var line in viewContent.Split(new string[] { "\r\n", "\n", "\n\r" }, StringSplitOptions.None))
             {
+                if (line.TrimStart().StartsWith("@{"))
+                {
+                    bracketsInCSharpCode++;
+                    continue;
+                }
                 if (line.TrimStart().StartsWith("{") || line.TrimStart().StartsWith("}"))
                 {
-                    CSharpCodeForAppendingTheHtml += line;
+                    if (bracketsInCSharpCode > 0)
+                    {
+                        if (line.TrimStart().StartsWith("{"))
+                        {
+                            bracketsInCSharpCode++;
+                        }
+                        if (line.TrimStart().StartsWith("}"))
+                        {
+                            bracketsInCSharpCode--;
+                            if (bracketsInCSharpCode == 0)
+                            {
+                                continue;
+                            }
+                        }
+                    }
+
+                    CSharpCodeForAppendingTheHtml += line + Environment.NewLine;
+
+
+                }
+                else if (bracketsInCSharpCode > 0)
+                {
+                    CSharpCodeForAppendingTheHtml += line + Environment.NewLine;
                 }
                 else if (supportedOperators.Any(oper => line.TrimStart().StartsWith("@" + oper)))
                 {
                     var lineWithoutAt = line.Remove(line.IndexOf("@"), 1);
-                    CSharpCodeForAppendingTheHtml += lineWithoutAt;
+                    CSharpCodeForAppendingTheHtml += lineWithoutAt + Environment.NewLine;
                 }
                 else
                 {
                     if (line.Contains("@") == false)
                     {
-                        CSharpCodeForAppendingTheHtml += $"html.AppendLine(@\"{line.Replace("\"", "\"\"")}\");";
+                        CSharpCodeForAppendingTheHtml += $"html.AppendLine(@\"{line.Replace("\"", "\"\"")}\");" + Environment.NewLine;
                     }
                     else
                     {
@@ -170,7 +199,7 @@ namespace CustomRazor
                         }
 
                         appendLineCode += $"{lineCopy.Replace("\"", "\"\"")}\");";
-                        CSharpCodeForAppendingTheHtml += appendLineCode;
+                        CSharpCodeForAppendingTheHtml += appendLineCode + Environment.NewLine;
                     }
                 }
             }

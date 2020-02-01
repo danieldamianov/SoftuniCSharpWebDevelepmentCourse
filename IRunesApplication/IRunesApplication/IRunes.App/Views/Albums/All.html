@@ -15,9 +15,17 @@
 <a class="btn btn-primary" href="/Albums/Create">Create Album</a>
 <hr size="30">
 <div>
+    @{
+        var a = 5;
+        List<string> l = new List<string>();
+        int doso()
+        {
+            return 0;
+        }
+    }
     @foreach(var album in @Model.Albums)
     {
          
-        <br><a class="btn btn-primary" href="/Albums/Details?id=@album.Id"> @album.Name</a>
+        <br><a class="btn btn-primary" href="/Albums/Details?id=@album.Id"> @album.Name @a</a>
     }
 </div>
