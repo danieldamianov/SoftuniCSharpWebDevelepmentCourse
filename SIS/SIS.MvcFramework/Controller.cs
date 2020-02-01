@@ -45,7 +45,7 @@ namespace SIS.MvcFramework
 
             layoutContent = layoutContent.Replace("@RenderView", htmlAsString);
 
-            layoutContent = this.ViewEngine.TransformView(layoutContent,model);
+            layoutContent = this.ViewEngine.TransformView(layoutContent,model,this.User);
 
             return new HtmlResult(layoutContent, SIS.HTTP.Enums.HttpResponseStatusCode.Ok);
         }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using SIS.HTTP.Identity;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +13,7 @@ namespace SIS.MvcFramework.ViewEngine
 {
     public class SISViewEngine : IViewEngine
     {
-        public string TransformView<T>(string viewContent, T model)
+        public string TransformView<T>(string viewContent, T model, Principal user = null)
         {
             string cSharpCodeForFillingTheStringBuilder = GetCSharpCodeForFillingTheStringBuilder(viewContent);
 
@@ -22,15 +23,16 @@ using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using SIS.MvcFramework.ViewEngine;
+using SIS.HTTP.Identity;
 
 namespace CustomRazor
 {{
     public class CustomViewEngine : IView
     {{
-        public string GetHtml(object model)
+        public string GetHtml(object model,  Principal user)
         {{
             var Model = model as {model.GetType().FullName};
-            
+            var User = user;
             var html = new StringBuilder();
 
             {cSharpCodeForFillingTheStringBuilder}
@@ -47,16 +49,17 @@ using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using SIS.MvcFramework.ViewEngine;
+using SIS.HTTP.Identity;
 
 namespace CustomRazor
 {{
     public class CustomViewEngine : IView
     {{
-        public string GetHtml(object model)
+        public string GetHtml(object model,  Principal user)
         {{
             
             var html = new StringBuilder();
-
+            var User = user;
             {cSharpCodeForFillingTheStringBuilder}
 
             return html.ToString();
@@ -68,7 +71,7 @@ namespace CustomRazor
 ;
             IView view = CompileAndIntance(virtualMethod, model?.GetType().Assembly);
 
-            return view.GetHtml(model);
+            return view.GetHtml(model,user);
         }
 
         private IView CompileAndIntance(string virtualMethod, Assembly assembly)
@@ -76,7 +79,8 @@ namespace CustomRazor
             var compilation = CSharpCompilation.Create("ViewEngineAssembly")
                 .WithOptions(new CSharpCompilationOptions(Microsoft.CodeAnalysis.OutputKind.DynamicallyLinkedLibrary))
                 .AddReferences(MetadataReference.CreateFromFile(typeof(object).Assembly.Location))
-                .AddReferences(MetadataReference.CreateFromFile(typeof(IView).Assembly.Location));
+                .AddReferences(MetadataReference.CreateFromFile(typeof(IView).Assembly.Location))
+                .AddReferences(MetadataReference.CreateFromFile(typeof(Principal).Assembly.Location));
 
             if (assembly != null)
             {
