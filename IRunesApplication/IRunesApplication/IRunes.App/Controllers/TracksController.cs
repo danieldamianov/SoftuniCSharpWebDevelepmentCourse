@@ -34,6 +34,12 @@ namespace IRunes.App.Controllers
         [HttpPost]
         public ActionResult Create(TrackCreateInputViewModel model)
         {
+            if (ModelState.IsValid == false)
+            {
+                return this.Redirect("/");
+            }
+
+
             string albumId = model.AlbumId;
 
             string trackName = model.Name;

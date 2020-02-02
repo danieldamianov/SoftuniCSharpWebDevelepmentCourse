@@ -3,6 +3,7 @@ using SIS.HTTP.Requests;
 using SIS.HTTP.Responses;
 using SIS.MvcFramework.Extensions;
 using SIS.MvcFramework.Results;
+using SIS.MvcFramework.Validation;
 using SIS.MvcFramework.ViewEngine;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,8 @@ namespace SIS.MvcFramework
             : null;
 
         protected internal IHttpRequest Request { get; set; }
+
+        public ModelStateDictionary ModelState { get; set; }
 
         public Controller()
         {

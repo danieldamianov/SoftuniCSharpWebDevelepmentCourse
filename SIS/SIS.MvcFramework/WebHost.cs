@@ -5,8 +5,10 @@ using SIS.HTTP.Sessions;
 using SIS.MvcFramework.Attributes.ActionAttributes;
 using SIS.MvcFramework.Attributes.HttpAttributes;
 using SIS.MvcFramework.Attributes.SecurityAttributes;
+using SIS.MvcFramework.Attributes.ValidationAttributes;
 using SIS.MvcFramework.Results;
 using SIS.MvcFramework.Routing;
+using SIS.MvcFramework.Validation;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -33,6 +35,33 @@ namespace SIS.MvcFramework
             var server = new Server(8000, serverRoutingTable, httpSessionStorage);
             server.Run();
 
+        }
+        
+        private static ModelStateDictionary ValidateObject(object value)
+        {
+            ModelStateDictionary modelStateDictionary = new ModelStateDictionary();
+
+            var objectProperties = value.GetType().GetProperties();
+
+            foreach (var prop in objectProperties)
+            {
+                var validationAttributes = prop.GetCustomAttributes()
+                    .Where(attribute => attribute is BaseValidationAttribute)
+                    .Cast<BaseValidationAttribute>()
+                    .ToList();
+
+                foreach(var validationAttribure in validationAttributes)
+                {
+                    if (validationAttribure.IsValid(prop.GetValue(value)))
+                    {
+                        continue;
+                    }
+
+                    modelStateDictionary.Add(prop.Name, validationAttribure.ErrorMessage);
+                }
+            }
+
+            return modelStateDictionary;
         }
 
         private static void AutoRegisterRoutes(IMvcApplication startUp
@@ -176,7 +205,7 @@ namespace SIS.MvcFramework
                                       }
                                   }
                               }
-
+                              controllerInstance.ModelState = ValidateObject(parameterValueConverted);
                               parametersInstances.Add(parameterValueConverted);
 
                           }
