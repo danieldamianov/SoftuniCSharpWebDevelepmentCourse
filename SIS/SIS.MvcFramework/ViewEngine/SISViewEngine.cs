@@ -8,12 +8,13 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using SIS.MvcFramework.Validation;
 
 namespace SIS.MvcFramework.ViewEngine
 {
     public class SISViewEngine : IViewEngine
     {
-        public string TransformView<T>(string viewContent, T model, Principal user = null)
+        public string TransformView<T>(string viewContent, T model, ModelStateDictionary modelStateDictionary, Principal user = null)
         {
             string cSharpCodeForFillingTheStringBuilder = GetCSharpCodeForFillingTheStringBuilder(viewContent);
 
@@ -24,15 +25,17 @@ using System.Text;
 using System.Collections.Generic;
 using SIS.MvcFramework.ViewEngine;
 using SIS.HTTP.Identity;
+using SIS.MvcFramework.Validation;
 
 namespace CustomRazor
 {{
     public class CustomViewEngine : IView
     {{
-        public string GetHtml(object model,  Principal user)
+        public string GetHtml(object model,  Principal user, ModelStateDictionary modelState)
         {{
             var Model = model as {model.GetType().FullName};
             var User = user;
+            var ModelState = modelState;
             var html = new StringBuilder();
 
             {cSharpCodeForFillingTheStringBuilder}
@@ -49,17 +52,19 @@ using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using SIS.MvcFramework.ViewEngine;
+using SIS.MvcFramework.Validation;
 using SIS.HTTP.Identity;
 
 namespace CustomRazor
 {{
     public class CustomViewEngine : IView
     {{
-        public string GetHtml(object model,  Principal user)
+        public string GetHtml(object model,  Principal user, ModelStateDictionary modelState)
         {{
             
             var html = new StringBuilder();
             var User = user;
+            var ModelState = modelState;
             {cSharpCodeForFillingTheStringBuilder}
 
             return html.ToString();
@@ -71,7 +76,7 @@ namespace CustomRazor
 ;
             IView view = CompileAndIntance(virtualMethod, model?.GetType().Assembly);
 
-            return view.GetHtml(model,user);
+            return view.GetHtml(model,user,modelStateDictionary);
         }
 
         private IView CompileAndIntance(string virtualMethod, Assembly assembly)

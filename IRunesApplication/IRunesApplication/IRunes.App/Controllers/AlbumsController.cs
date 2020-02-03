@@ -1,4 +1,5 @@
 ﻿using IRunes.App.ViewModels;
+using IRunes.App.ViewModels.InputViewModels.Albums;
 using IRunes.Database.Models;
 using IRunes.Services;
 using SIS.MvcFramework;
@@ -34,14 +35,21 @@ namespace IRunes.App.Controllers
         [Authorize]
         public ActionResult Create()
         {
+            
             return this.View();
         }
 
         [Authorize]
         [HttpPost(ActionName = "Create")]
-        public ActionResult HandleCreatingAlbum(string name,string cover)
+        public ActionResult HandleCreatingAlbum(AlbumCreateInputViewModel albumCreateInputViewModel)
         {
-            this.albumsService.AddAlbum(new Album() { Name = HttpUtility.UrlDecode(name), Cover = HttpUtility.UrlDecode(cover), Id = Guid.NewGuid().ToString() });
+            if (ModelState.IsValid == false)
+            {
+                return this.Redirect("/Albums/Create");
+            }
+
+            this.albumsService.AddAlbum(new Album() { Name = HttpUtility.UrlDecode(albumCreateInputViewModel.Name),
+                Cover = HttpUtility.UrlDecode(albumCreateInputViewModel.Cover), Id = Guid.NewGuid().ToString() });
 
             return this.Redirect("/Albums/All");
         }

@@ -24,7 +24,7 @@ namespace SIS.MvcFramework.Tests
             string inputView = File.ReadAllText(viewPath);
             string expectedOutputView = File.ReadAllText(viewExpectedPath);
 
-            string actualOutput = sISViewEngine.TransformView<object>(inputView,new ExampleViewModel());
+            string actualOutput = sISViewEngine.TransformView<object>(inputView,new ExampleViewModel(),new Validation.ModelStateDictionary());
 
             Assert.AreEqual(expectedOutputView.TrimEnd(), actualOutput.TrimEnd());
         }

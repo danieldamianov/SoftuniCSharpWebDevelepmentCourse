@@ -20,6 +20,7 @@ namespace SIS.MvcFramework
 {
     public class WebHost
     {
+        private static readonly ControllerState controllerState = new ControllerState();
         public static void Run(IMvcApplication startUp)
         {
             IServerRoutingTable serverRoutingTable = new ServerRoutingTable();
@@ -36,7 +37,7 @@ namespace SIS.MvcFramework
             server.Run();
 
         }
-        
+
         private static ModelStateDictionary ValidateObject(object value)
         {
             ModelStateDictionary modelStateDictionary = new ModelStateDictionary();
@@ -50,7 +51,7 @@ namespace SIS.MvcFramework
                     .Cast<BaseValidationAttribute>()
                     .ToList();
 
-                foreach(var validationAttribure in validationAttributes)
+                foreach (var validationAttribure in validationAttributes)
                 {
                     if (validationAttribure.IsValid(prop.GetValue(value)))
                     {
@@ -112,6 +113,7 @@ namespace SIS.MvcFramework
                           =>
                       {
                           var controllerInstance = serviceProvider.CreateInstance(controller) as Controller;
+                          controllerState.SetStateOfController(controllerInstance);
                           controllerInstance.Request = request;
                           AuthorizeAttribute authorizeAttribute = method.GetCustomAttribute<AuthorizeAttribute>();
                           if (authorizeAttribute != null
@@ -205,12 +207,24 @@ namespace SIS.MvcFramework
                                       }
                                   }
                               }
-                              controllerInstance.ModelState = ValidateObject(parameterValueConverted);
+
+                              if (httpRequestMethod == HttpRequestMethod.Post)
+                              {
+                                  controllerInstance.ModelState = ValidateObject(parameterValueConverted);
+                                  controllerState.InitializeInnerState(controllerInstance);
+                              }
+                              
+
                               parametersInstances.Add(parameterValueConverted);
 
                           }
 
                           var response = method.Invoke(controllerInstance, parametersInstances.ToArray());
+
+                          if (httpRequestMethod == HttpRequestMethod.Get)
+                          {
+                              controllerState.Reset();
+                          }
                           return response as IHttpResponse;
                       });
 

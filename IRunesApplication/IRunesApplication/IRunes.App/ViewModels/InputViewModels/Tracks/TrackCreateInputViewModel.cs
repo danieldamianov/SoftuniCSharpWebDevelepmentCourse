@@ -9,9 +9,10 @@ namespace IRunes.App.ViewModels.InputViewModels.Tracks
     {
         public string AlbumId { get; set; }
         
-        [StringLengthValidationAttribute("Not proper length",5,10)]
+        [StringLengthValidation("Not proper length",5,10)]
         public string Name { get; set; }
-    
+
+        [StringLengthValidation("Not proper length", 5, 10)]
         public string Link { get; set; }
       
         public decimal Price { get; set; }

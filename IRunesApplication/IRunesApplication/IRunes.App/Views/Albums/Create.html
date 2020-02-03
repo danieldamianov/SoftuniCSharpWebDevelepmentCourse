@@ -1,4 +1,14 @@
-﻿<form action="/Albums/Create" method="post" class="form-control">
+﻿@foreach(var message in ModelState.ErrorMessages)
+{
+<h1>@message.Key</h1>
+    @foreach(var error in message.Value)
+    {
+<h3>@error</h3><br />
+    }
+
+}
+
+<form action="/Albums/Create" method="post" class="form-control">
     <h1>Create Album</h1>
     <br>
     <div class="form-group">

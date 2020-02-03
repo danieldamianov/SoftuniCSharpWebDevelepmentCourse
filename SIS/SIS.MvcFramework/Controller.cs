@@ -32,6 +32,7 @@ namespace SIS.MvcFramework
         public Controller()
         {
             this.ViewData = new Dictionary<string, string>();
+            this.ModelState = new ModelStateDictionary();
         }
 
         protected ActionResult View<T>(T model = null, [CallerMemberName] string name = null) where T : class
@@ -48,7 +49,7 @@ namespace SIS.MvcFramework
 
             layoutContent = layoutContent.Replace("@RenderView", htmlAsString);
 
-            layoutContent = this.ViewEngine.TransformView(layoutContent,model,this.User);
+            layoutContent = this.ViewEngine.TransformView(layoutContent,model,this.ModelState,this.User);
 
             return new HtmlResult(layoutContent, SIS.HTTP.Enums.HttpResponseStatusCode.Ok);
         }
