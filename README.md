@@ -1,1 +1,1 @@
-# Softuni-C-Web-Develepment-Course
+# Softuni-C#-Web-Develepment-Course
