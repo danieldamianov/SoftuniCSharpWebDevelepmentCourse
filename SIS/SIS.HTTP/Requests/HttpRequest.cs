@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using SIS.HTTP.Common;
 using SIS.HTTP.Cookies;
@@ -23,7 +24,7 @@ namespace SIS.HTTP.Requests
             this.Headers = new HttpHeaderCollection();
             this.Cookies = new HttpCookieCollection();
 
-            this.ParseRequest(requestString);
+            this.ParseRequest(WebUtility.UrlDecode(requestString));
         }
 
         public string Path { get; private set; }

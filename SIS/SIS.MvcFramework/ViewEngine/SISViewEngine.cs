@@ -16,7 +16,8 @@ namespace SIS.MvcFramework.ViewEngine
     {
         public string TransformView<T>(string viewContent, T model, ModelStateDictionary modelStateDictionary, Principal user = null)
         {
-            string cSharpCodeForFillingTheStringBuilder = GetCSharpCodeForFillingTheStringBuilder(viewContent);
+            string cSharpCodeForFillingTheStringBuilder = HandleWidgets(viewContent);
+            cSharpCodeForFillingTheStringBuilder = GetCSharpCodeForFillingTheStringBuilder(cSharpCodeForFillingTheStringBuilder);
 
             string virtualMethod = model != null ? $@"
 using System;
@@ -77,6 +78,24 @@ namespace CustomRazor
             IView view = CompileAndIntance(virtualMethod, model?.GetType().Assembly);
 
             return view.GetHtml(model,user,modelStateDictionary);
+        }
+
+        private string HandleWidgets(string viewContent)
+        {
+            var widgets = Assembly.GetEntryAssembly()
+                .GetTypes()
+                .Where(t => typeof(IViewWidget).IsAssignableFrom(t))
+                .Select(t => Activator.CreateInstance(t))
+                .Cast<IViewWidget>()
+                .ToList();
+
+            foreach (var widget in widgets)
+            {
+                viewContent = viewContent.Replace($"@Widgets.{widget.GetType().Name}",
+                    widget.GetContent());
+            }
+
+            return viewContent;
         }
 
         private IView CompileAndIntance(string virtualMethod, Assembly assembly)

@@ -36,7 +36,7 @@ namespace IRunes.App.Controllers
         {
             if (ModelState.IsValid == false)
             {
-                return this.Redirect("/");
+                return this.Redirect("/Tracks/Create");
             }
 
 

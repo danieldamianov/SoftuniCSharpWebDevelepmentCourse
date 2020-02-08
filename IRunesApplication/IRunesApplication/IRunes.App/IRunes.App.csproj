@@ -27,6 +27,9 @@
     <None Update="Views\Albums\Create.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Views\Shared\Widgets\ValidationWidget.vwhtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Views\Tracks\Create.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

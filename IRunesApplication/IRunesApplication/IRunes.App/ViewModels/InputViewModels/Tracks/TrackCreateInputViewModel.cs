@@ -15,6 +15,7 @@ namespace IRunes.App.ViewModels.InputViewModels.Tracks
         [StringLengthValidation("Not proper length", 5, 10)]
         public string Link { get; set; }
       
+        [RangeValidation(10,20,"Price not between 10 and 20")]
         public decimal Price { get; set; }
     }
 }

@@ -1,0 +1,10 @@
+﻿@foreach(var message in ModelState.ErrorMessages)
+{
+<div class="alert alert-danger" role="alert">
+<p>@message.Key</p>
+    @foreach(var error in message.Value)
+    {
+<p>@error</p><br />
+    }
+</div>
+}
